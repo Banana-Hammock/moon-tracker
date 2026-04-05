@@ -6,8 +6,14 @@ function HorizonStrip({ heading, moonAzimuth }) {
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
-    const width = canvas.width
-    const height = canvas.height
+    const dpr = window.devicePixelRatio || 1
+
+    const width = canvas.offsetWidth
+    const height = canvas.offsetHeight
+
+    canvas.width = width * dpr
+    canvas.height = height * dpr
+    ctx.scale(dpr, dpr)
 
     // Clear canvas
     ctx.clearRect(0, 0, width, height)
@@ -37,22 +43,20 @@ function HorizonStrip({ heading, moonAzimuth }) {
     ]
 
     directions.forEach(({ label, deg }) => {
-      // Difference between direction and current heading
       let diff = deg - (heading || 0)
       if (diff > 180) diff -= 360
       if (diff < -180) diff += 360
 
       const x = width / 2 + (diff / 90) * (width / 2)
-
       if (x < 0 || x > width) return
 
-      ctx.fillStyle = '#ffffff60'
-      ctx.font = '12px monospace'
+      ctx.fillStyle = '#ffffff99'
+      ctx.font = '600 13px system-ui, sans-serif'
       ctx.textAlign = 'center'
-      ctx.fillText(label, x, height / 2 - 10)
+      ctx.fillText(label, x, height / 2 - 12)
     })
 
-    // Draw moon indicator on strip
+    // Draw moon indicator
     const moonDeg = moonAzimuth * (180 / Math.PI) + 180
     let moonDiff = moonDeg - (heading || 0)
     if (moonDiff > 180) moonDiff -= 360
@@ -72,9 +76,7 @@ function HorizonStrip({ heading, moonAzimuth }) {
   return (
     <canvas
       ref={canvasRef}
-      width={window.innerWidth}
-      height={80}
-      style={{ display: 'block', width: '100%' }}
+      style={{ display: 'block', width: '100%', height: '80px' }}
     />
   )
 }
