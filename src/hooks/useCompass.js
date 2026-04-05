@@ -5,38 +5,41 @@ export function useCompass() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    const handleOrientation = (event) => {
-      if (event.webkitCompassHeading !== undefined && event.webkitCompassHeading !== null) {
-        // iOS — already true north
-        setHeading(event.webkitCompassHeading)
-      } else if (event.absolute === true && event.alpha !== null) {
-        // Android absolute orientation — true north
-        setHeading(360 - event.alpha)
-      } else if (event.alpha !== null) {
-        // Fallback — request absolute orientation
-        setHeading(360 - event.alpha)
-      }
+    const handleAbsolute = (event) => {
+      if (event.alpha === null) return
+      const h = (360 - event.alpha + 360) % 360
+      setHeading(h)
+    }
+
+    const setup = () => {
+      window.addEventListener('deviceorientationabsolute', handleAbsolute, true)
+      
+      // Check after 3 seconds if we got any data
+      setTimeout(() => {
+        if (heading === null) {
+          setError("Compass not supported on this device")
+        }
+      }, 3000)
     }
 
     if (typeof DeviceOrientationEvent !== 'undefined' &&
       typeof DeviceOrientationEvent.requestPermission === 'function') {
+      // iOS
       DeviceOrientationEvent.requestPermission()
         .then(response => {
           if (response === 'granted') {
-            window.addEventListener('deviceorientationabsolute', handleOrientation, true)
+            setup()
           } else {
             setError("Compass permission denied")
           }
         })
     } else {
-      window.addEventListener('deviceorientationabsolute', handleOrientation, true)
-      // Fallback for browsers that don't support absolute
-      window.addEventListener('deviceorientation', handleOrientation, true)
+      // Android
+      setup()
     }
 
     return () => {
-      window.removeEventListener('deviceorientationabsolute', handleOrientation, true)
-      window.removeEventListener('deviceorientation', handleOrientation, true)
+      window.removeEventListener('deviceorientationabsolute', handleAbsolute, true)
     }
   }, [])
 
