@@ -1,22 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export function useCompass() {
   const [heading, setHeading] = useState(null)
   const [error, setError] = useState(null)
+  const receivedData = useRef(false)
 
   useEffect(() => {
     const handleAbsolute = (event) => {
       if (event.alpha === null) return
+      receivedData.current = true
       const h = (360 - event.alpha + 360) % 360
       setHeading(h)
     }
 
     const setup = () => {
       window.addEventListener('deviceorientationabsolute', handleAbsolute, true)
-      
-      // Check after 3 seconds if we got any data
+
       setTimeout(() => {
-        if (heading === null) {
+        if (!receivedData.current) {
           setError("Compass not supported on this device")
         }
       }, 3000)
@@ -24,7 +25,6 @@ export function useCompass() {
 
     if (typeof DeviceOrientationEvent !== 'undefined' &&
       typeof DeviceOrientationEvent.requestPermission === 'function') {
-      // iOS
       DeviceOrientationEvent.requestPermission()
         .then(response => {
           if (response === 'granted') {
@@ -34,7 +34,6 @@ export function useCompass() {
           }
         })
     } else {
-      // Android
       setup()
     }
 
