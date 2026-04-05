@@ -8,13 +8,13 @@ export function useWeather(location) {
   useEffect(() => {
     if (!location) return
 
-    const fetch = async () => {
+    const fetchWeather = async () => {
       try {
         const res = await axios.get('https://api.open-meteo.com/v1/forecast', {
           params: {
             latitude: location.lat,
             longitude: location.lon,
-            current: 'temperature_2m,cloudcover,weathercode',
+            current: 'temperature_2m,cloudcover,weathercode,windspeed_10m,relativehumidity_2m',
             hourly: 'cloudcover',
             timezone: 'auto',
             forecast_days: 1,
@@ -24,6 +24,8 @@ export function useWeather(location) {
         setWeather({
           temperature: res.data.current.temperature_2m,
           cloudcover: res.data.current.cloudcover,
+          windspeed: res.data.current.windspeed_10m,
+          humidity: res.data.current.relativehumidity_2m,
           hourlyCloudcover: res.data.hourly.cloudcover,
           hourlyTimes: res.data.hourly.time,
         })
@@ -32,7 +34,7 @@ export function useWeather(location) {
       }
     }
 
-    fetch()
+    fetchWeather()
   }, [location])
 
   return { weather, error }
