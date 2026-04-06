@@ -13,17 +13,19 @@ function DashCard({ label, value, children, style }) {
       display: 'flex',
       flexDirection: 'column',
       gap: '6px',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
       ...style,
     }}>
-      <small style={{
-        color: 'var(--secondary)',
-        fontSize: '0.7rem',
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
-      }}>
-        {label}
-      </small>
+      {label && (
+        <small style={{
+          color: 'var(--secondary)',
+          fontSize: '0.7rem',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+        }}>
+          {label}
+        </small>
+      )}
       {children ? children : (
         <div style={{
           fontFamily: 'Funnel Display, sans-serif',
@@ -64,8 +66,8 @@ function Dashboard({ moonData, weather, heading }) {
       gap: '10px',
     }}>
 
-      {/* Row 1: Compass (left half) + Visibility + Cloud/Temp (right half) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+      {/* Row 1: Compass (left, no label) + Visibility + Cloud/Temp (right) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'stretch' }}>
 
         <div style={{
           background: '#ffffff08',
@@ -74,22 +76,14 @@ function Dashboard({ moonData, weather, heading }) {
           padding: '16px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '6px',
+          justifyContent: 'center',
         }}>
-          <small style={{
-            color: 'var(--secondary)',
-            fontSize: '0.7rem',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-          }}>
-            Live Compass
-          </small>
           <Compass heading={heading} moonAzimuth={moonData.azimuth} />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <DashCard label="Visibility" value={visibility} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <DashCard label="Visibility" value={visibility} style={{ flex: 1 }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', flex: 1 }}>
             <DashCard label="Cloud" value={weather?.cloudcover !== undefined ? `${weather.cloudcover}%` : '--'} />
             <DashCard label="Temp" value={weather?.temperature !== undefined ? `${Math.round(weather.temperature)}°C` : '--'} />
           </div>
@@ -97,15 +91,15 @@ function Dashboard({ moonData, weather, heading }) {
 
       </div>
 
-      {/* Row 2: Rise/Set times (left) + Moon Phase (right, tall) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'start' }}>
+      {/* Row 2: Rise/Set (left) + Moon Phase (right) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'stretch' }}>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <DashCard label="Rise Time" value={formatTime(moonData.rise)} />
-          <DashCard label="Set Time" value={formatTime(moonData.set)} />
+          <DashCard label="Rise Time" value={formatTime(moonData.rise)} style={{ flex: 1 }} />
+          <DashCard label="Set Time" value={formatTime(moonData.set)} style={{ flex: 1 }} />
         </div>
 
-        <DashCard label="Moon Phase">
+        <DashCard label="Moon Phase" style={{ alignItems: 'center', justifyContent: 'center' }}>
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -130,13 +124,15 @@ function Dashboard({ moonData, weather, heading }) {
 
       </div>
 
-      {/* Best viewing window - full width */}
-      <ViewingWindow
-        hourlyCloudcover={weather?.hourlyCloudcover}
-        hourlyTimes={weather?.hourlyTimes}
-        moonRise={moonData.rise}
-        moonSet={moonData.set}
-      />
+      {/* Best viewing window - full width, 1.5x height */}
+      <div style={{ minHeight: '150px' }}>
+        <ViewingWindow
+          hourlyCloudcover={weather?.hourlyCloudcover}
+          hourlyTimes={weather?.hourlyTimes}
+          moonRise={moonData.rise}
+          moonSet={moonData.set}
+        />
+      </div>
 
       {/* Row 3: Illumination, Wind, Humidity, Altitude — 4 in a row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
@@ -146,7 +142,7 @@ function Dashboard({ moonData, weather, heading }) {
         <DashCard label="Alt." value={`${altitudeDeg}°`} />
       </div>
 
-      {/* Row 4: Distance + Lunar Age — half width each */}
+      {/* Row 4: Distance + Lunar Age */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
         <DashCard label="Distance" value={`${distance.toLocaleString()} km`} />
         <DashCard label="Lunar Age" value={`${moonAge} days`} />

@@ -1,3 +1,5 @@
+import { getNASAMoonFrameURL } from './utils/moonPhase'
+
 import { useState, useEffect, useRef } from 'react'
 import { useLocation } from './hooks/useLocation'
 import { useMoonData } from './hooks/useMoonData'
@@ -5,6 +7,12 @@ import { useCompass } from './hooks/useCompass'
 import { useWeather } from './hooks/useWeather'
 import { useClock } from './hooks/useClock'
 import { getAltitudeInstruction } from './utils/altitudeInstruction'
+
+useEffect(() => {
+  const img = new Image()
+  img.src = getNASAMoonFrameURL()
+}, [])
+
 import HorizonStrip from './components/HorizonStrip'
 import StickyHeader from './components/StickyHeader'
 import LockOnRing from './components/LockOnRing'
