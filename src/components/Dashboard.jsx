@@ -7,7 +7,7 @@ function DashCard({ label, value, wide, tall, children }) {
   return (
     <div style={{
       background: '#ffffff08',
-      border: '0.5px solid #ffffff15',
+      border: '0.5px solid #ffffff08',
       borderRadius: '16px',
       padding: '16px',
       gridColumn: wide ? 'span 2' : 'span 1',
@@ -19,8 +19,8 @@ function DashCard({ label, value, wide, tall, children }) {
     }}>
       <small style={{
         color: 'var(--secondary)',
-        fontSize: '0.7rem',
-        letterSpacing: '0.08em',
+        fontSize: '0.6rem',
+        letterSpacing: '0.06em',
         textTransform: 'uppercase',
       }}>
         {label}
@@ -70,7 +70,7 @@ function Dashboard({ moonData, weather, heading }) {
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
-        gap: '10px',
+        gap: '8px',
       }}>
 
         {/* Compass — left half, spans 2 rows */}

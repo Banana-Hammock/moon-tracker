@@ -115,10 +115,37 @@ function App() {
       }}>
 
         {/* Lock on ring + moon canvas */}
-        <LockOnRing isLocked={isLocked} delta={delta || 0} size={300}>
-          <MoonCanvas size={280} />
-        </LockOnRing>
-        
+        {(() => {
+          const maxOffset = 80
+          const offsetX = delta !== null && heading !== null
+            ? Math.max(-maxOffset, Math.min(maxOffset,
+                (() => {
+                  const raw = moonAzimuthDeg - heading
+                  const diff = ((raw + 540) % 360) - 180
+                  return diff * 2
+                })()
+              ))
+            : 0
+
+          const offsetY = moonData
+            ? Math.max(-maxOffset, Math.min(maxOffset,
+                -(moonData.altitude * 180 / Math.PI - 30) * 2
+              ))
+            : 0
+
+          return (
+            <LockOnRing
+              isLocked={isLocked}
+              delta={delta || 0}
+              offsetX={offsetX}
+              offsetY={offsetY}
+              size="95vw"
+            >
+              <MoonCanvas size="50%" />
+            </LockOnRing>
+          )
+        })()}
+
         {/* Instruction */}
         <p style={{
           fontSize: '1.1rem',

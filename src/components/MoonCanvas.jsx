@@ -1,20 +1,18 @@
-import { useEffect, useRef } from 'react'
 import { getNASAMoonFrameURL } from '../utils/moonPhase'
 
-function MoonCanvas({ size = 220 }) {
-  const imgRef = useRef(null)
+function MoonCanvas({ size = '70%' }) {
   const url = getNASAMoonFrameURL()
 
   return (
     <div style={{
-      width: `${size}px`,
-      height: `${size}px`,
+      width: size,
+      height: size,
       borderRadius: '50%',
       overflow: 'hidden',
       background: '#000',
+      flexShrink: 0,
     }}>
       <img
-        ref={imgRef}
         src={url}
         alt="Current moon phase"
         style={{
