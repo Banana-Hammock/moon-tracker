@@ -8,7 +8,6 @@ import { getAltitudeInstruction } from './utils/altitudeInstruction'
 
 import HorizonStrip from './components/HorizonStrip'
 import StickyHeader from './components/StickyHeader'
-import MoonCanvas from './components/MoonCanvas'
 import LockOnRing from './components/LockOnRing'
 import KPIGrid from './components/KPIGrid'
 import Dashboard from './components/Dashboard'
@@ -114,23 +113,24 @@ function App() {
         gap: '16px',
       }}>
 
-        {/* Lock on ring + moon canvas */}
+        {/* Lock on ring with floating moon */}
         {(() => {
-          const maxOffset = 80
-          const offsetX = delta !== null && heading !== null
-            ? Math.max(-maxOffset, Math.min(maxOffset,
-                (() => {
-                  const raw = moonAzimuthDeg - heading
-                  const diff = ((raw + 540) % 360) - 180
-                  return diff * 2
-                })()
-              ))
+          const maxOffset = 150
+
+          const offsetX = heading !== null && moonAzimuthDeg !== null
+            ? (() => {
+                const raw = moonAzimuthDeg - heading
+                const diff = ((raw + 540) % 360) - 180
+                return Math.max(-maxOffset, Math.min(maxOffset, diff * 3))
+              })()
             : 0
 
           const offsetY = moonData
-            ? Math.max(-maxOffset, Math.min(maxOffset,
-                -(moonData.altitude * 180 / Math.PI - 30) * 2
-              ))
+            ? (() => {
+                const altDeg = moonData.altitude * 180 / Math.PI
+                const offset = -(altDeg - 30) * 3
+                return Math.max(-maxOffset, Math.min(maxOffset, offset))
+              })()
             : 0
 
           return (
@@ -139,10 +139,8 @@ function App() {
               delta={delta || 0}
               offsetX={offsetX}
               offsetY={offsetY}
-              size="95vw"
-            >
-              <MoonCanvas size="50%" />
-            </LockOnRing>
+              size="85vw"
+            />
           )
         })()}
 
