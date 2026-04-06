@@ -5,7 +5,6 @@ import { useCompass } from './hooks/useCompass'
 import { useWeather } from './hooks/useWeather'
 import { useClock } from './hooks/useClock'
 import { getAltitudeInstruction } from './utils/altitudeInstruction'
-
 import HorizonStrip from './components/HorizonStrip'
 import StickyHeader from './components/StickyHeader'
 import LockOnRing from './components/LockOnRing'
@@ -16,13 +15,12 @@ import Footer from './components/Footer'
 function App() {
   const { location } = useLocation()
   const moonData = useMoonData(location)
-  const { heading } = useCompass()
+  const { heading, beta, gamma } = useCompass()
   const { weather } = useWeather(location)
   const { hours, minutes, seconds, day, date } = useClock()
   const [stickyVisible, setStickyVisible] = useState(false)
   const horizonRef = useRef(null)
 
-  // Show sticky header when horizon strip scrolls out of view
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setStickyVisible(!entry.isIntersecting),
@@ -32,17 +30,33 @@ function App() {
     return () => observer.disconnect()
   }, [])
 
-  // Calculate delta between heading and moon azimuth
   const moonAzimuthDeg = moonData
     ? ((moonData.azimuth * 180 / Math.PI) + 180 + 360) % 360
     : null
+  const moonAltitudeDeg = moonData
+    ? moonData.altitude * 180 / Math.PI
+    : null
 
-  let delta = null
-  if (heading !== null && moonAzimuthDeg !== null) {
-    delta = Math.abs(((moonAzimuthDeg - heading) + 540) % 360 - 180)
+  const phonePitch = beta !== null ? beta : 90
+  const phoneYaw = heading !== null ? heading : 0
+
+  let deltaAz = 0
+  let deltaAlt = 0
+
+  if (moonAzimuthDeg !== null && moonAltitudeDeg !== null) {
+    const rawAz = moonAzimuthDeg - phoneYaw
+    deltaAz = ((rawAz + 540) % 360) - 180
+    const phoneAltitude = phonePitch - 90
+    deltaAlt = moonAltitudeDeg - phoneAltitude
   }
 
-  const isLocked = delta !== null && delta <= 5
+  const delta = Math.abs(deltaAz)
+  const isLocked = delta <= 5 && Math.abs(deltaAlt) <= 10
+
+  const pxPerDegree = 6
+  const offsetX = -deltaAz * pxPerDegree
+  const offsetY = deltaAlt * pxPerDegree
+
   const instruction = moonData
     ? isLocked
       ? getAltitudeInstruction(moonData.altitude)
@@ -52,14 +66,11 @@ function App() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
 
-      {/* Sticky header — fades in when horizon strip leaves view */}
       <StickyHeader visible={stickyVisible} />
 
-      {/* Horizon strip */}
       <div ref={horizonRef} style={{ background: 'var(--black)' }}>
         <HorizonStrip heading={heading} moonAzimuth={moonData?.azimuth} />
 
-        {/* Date and time below horizon strip */}
         <div style={{ padding: '12px 20px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{
@@ -82,7 +93,6 @@ function App() {
             </div>
           </div>
 
-          {/* Hamburger */}
           <button style={{
             background: 'none',
             border: 'none',
@@ -104,7 +114,6 @@ function App() {
         </div>
       </div>
 
-      {/* Main content */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -113,38 +122,14 @@ function App() {
         gap: '16px',
       }}>
 
-        {/* Lock on ring with floating moon */}
-        {(() => {
-          const maxOffset = 500
+        <LockOnRing
+          isLocked={isLocked}
+          delta={delta || 0}
+          offsetX={offsetX}
+          offsetY={offsetY}
+          size="95vw"
+        />
 
-          const offsetX = heading !== null && moonAzimuthDeg !== null
-            ? (() => {
-                const raw = moonAzimuthDeg - heading
-                const diff = ((raw + 540) % 360) - 180
-                return Math.max(-maxOffset, Math.min(maxOffset, diff * 3))
-              })()
-            : 0
-
-          const offsetY = moonData
-            ? (() => {
-                const altDeg = moonData.altitude * 180 / Math.PI
-                const offset = -(altDeg - 30) * 3
-                return Math.max(-maxOffset, Math.min(maxOffset, offset))
-              })()
-            : 0
-
-          return (
-            <LockOnRing
-              isLocked={isLocked}
-              delta={delta || 0}
-              offsetX={offsetX}
-              offsetY={offsetY}
-              size="95vw"
-            />
-          )
-        })()}
-
-        {/* Instruction */}
         <p style={{
           fontSize: '1.1rem',
           fontWeight: '300',
@@ -158,19 +143,16 @@ function App() {
           {instruction}
         </p>
 
-        {/* KPI grid */}
         <KPIGrid moonData={moonData} weather={weather} />
 
       </div>
 
-      {/* Dashboard */}
       <Dashboard
         moonData={moonData}
         weather={weather}
         heading={heading}
       />
 
-      {/* Footer */}
       <Footer />
 
     </div>

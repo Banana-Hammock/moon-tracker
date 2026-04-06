@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 
 export function useCompass() {
   const [heading, setHeading] = useState(null)
+  const [beta, setBeta] = useState(null)
+  const [gamma, setGamma] = useState(null)
   const [error, setError] = useState(null)
   const receivedData = useRef(false)
 
@@ -11,11 +13,12 @@ export function useCompass() {
       receivedData.current = true
       const h = (360 - event.alpha + 360) % 360
       setHeading(h)
+      setBeta(event.beta)
+      setGamma(event.gamma)
     }
 
     const setup = () => {
       window.addEventListener('deviceorientationabsolute', handleAbsolute, true)
-
       setTimeout(() => {
         if (!receivedData.current) {
           setError("Compass not supported on this device")
@@ -42,5 +45,5 @@ export function useCompass() {
     }
   }, [])
 
-  return { heading, error }
+  return { heading, beta, gamma, error }
 }
