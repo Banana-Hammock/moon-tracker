@@ -1,6 +1,6 @@
 import Compass from './Compass'
 import ViewingWindow from './ViewingWindow'
-import { getMoonPhaseName, getMoonAge, formatTime, formatMoonSetCountdown } from '../utils/moonPhase'
+import { getMoonPhaseName, getMoonAge, formatTime } from '../utils/moonPhase'
 import MoonCanvas from './MoonCanvas'
 
 function DashCard({ label, value, children, style }) {
@@ -64,22 +64,47 @@ function Dashboard({ moonData, weather, heading }) {
       gap: '10px',
     }}>
 
-      {/* Row 1: Compass (half) + Visibility (half, tall) */}
+      {/* Row 1: Compass (left half) + Visibility + Cloud/Temp (right half) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-        <DashCard label="Live Compass" style={{ gridRow: 'span 2' }}>
+
+        <div style={{
+          background: '#ffffff08',
+          border: '0.5px solid #ffffff15',
+          borderRadius: '16px',
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '6px',
+        }}>
+          <small style={{
+            color: 'var(--secondary)',
+            fontSize: '0.7rem',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+          }}>
+            Live Compass
+          </small>
           <Compass heading={heading} moonAzimuth={moonData.azimuth} />
-        </DashCard>
-        <DashCard label="Visibility" value={visibility} />
-        <DashCard label="Cloud Cover" value={weather?.cloudcover !== undefined ? `${weather.cloudcover}%` : '--'} />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <DashCard label="Visibility" value={visibility} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <DashCard label="Cloud" value={weather?.cloudcover !== undefined ? `${weather.cloudcover}%` : '--'} />
+            <DashCard label="Temp" value={weather?.temperature !== undefined ? `${Math.round(weather.temperature)}°C` : '--'} />
+          </div>
+        </div>
+
       </div>
 
-      {/* Row 2: Temp (half) + Moon Phase tall (half) */}
+      {/* Row 2: Rise/Set times (left) + Moon Phase (right, tall) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'start' }}>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <DashCard label="Temperature" value={weather?.temperature !== undefined ? `${Math.round(weather.temperature)}°C` : '--'} />
           <DashCard label="Rise Time" value={formatTime(moonData.rise)} />
           <DashCard label="Set Time" value={formatTime(moonData.set)} />
         </div>
+
         <DashCard label="Moon Phase">
           <div style={{
             display: 'flex',
@@ -102,6 +127,7 @@ function Dashboard({ moonData, weather, heading }) {
             </div>
           </div>
         </DashCard>
+
       </div>
 
       {/* Best viewing window - full width */}

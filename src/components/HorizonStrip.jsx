@@ -7,30 +7,23 @@ function HorizonStrip({ heading, moonAzimuth }) {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
     const dpr = window.devicePixelRatio || 1
-
     const width = canvas.offsetWidth
     const height = canvas.offsetHeight
-
     canvas.width = width * dpr
     canvas.height = height * dpr
     ctx.scale(dpr, dpr)
 
-    // Clear canvas
     ctx.clearRect(0, 0, width, height)
-
-    // Background
-    ctx.fillStyle = '#0a0a1a'
+    ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, width, height)
 
-    // Draw horizon line
-    ctx.strokeStyle = '#ffffff30'
+    ctx.strokeStyle = '#ffffff20'
     ctx.lineWidth = 1
     ctx.beginPath()
     ctx.moveTo(0, height / 2)
     ctx.lineTo(width, height / 2)
     ctx.stroke()
 
-    // Draw compass direction labels
     const directions = [
       { label: 'N', deg: 0 },
       { label: 'NE', deg: 45 },
@@ -46,29 +39,27 @@ function HorizonStrip({ heading, moonAzimuth }) {
       let diff = deg - (heading || 0)
       if (diff > 180) diff -= 360
       if (diff < -180) diff += 360
-
       const x = width / 2 + (diff / 90) * (width / 2)
       if (x < 0 || x > width) return
 
-      ctx.fillStyle = '#ffffff99'
-      ctx.font = '600 13px system-ui, sans-serif'
+      ctx.fillStyle = '#d2bd5a'
+      ctx.font = '600 13px Be Vietnam Pro, system-ui'
       ctx.textAlign = 'center'
       ctx.fillText(label, x, height / 2 - 12)
     })
 
-    // Draw moon indicator
-    const moonDeg = moonAzimuth * (180 / Math.PI) + 180
-    let moonDiff = moonDeg - (heading || 0)
-    if (moonDiff > 180) moonDiff -= 360
-    if (moonDiff < -180) moonDiff += 360
-
-    const moonX = width / 2 + (moonDiff / 90) * (width / 2)
-
-    if (moonX >= 0 && moonX <= width) {
-      ctx.beginPath()
-      ctx.arc(moonX, height / 2, 10, 0, Math.PI * 2)
-      ctx.fillStyle = '#ffe066'
-      ctx.fill()
+    if (moonAzimuth !== undefined && moonAzimuth !== null) {
+      const moonDeg = moonAzimuth * (180 / Math.PI) + 180
+      let moonDiff = moonDeg - (heading || 0)
+      if (moonDiff > 180) moonDiff -= 360
+      if (moonDiff < -180) moonDiff += 360
+      const moonX = width / 2 + (moonDiff / 90) * (width / 2)
+      if (moonX >= 0 && moonX <= width) {
+        ctx.beginPath()
+        ctx.arc(moonX, height / 2, 8, 0, Math.PI * 2)
+        ctx.fillStyle = '#fffbe8'
+        ctx.fill()
+      }
     }
 
   }, [heading, moonAzimuth])
@@ -76,7 +67,7 @@ function HorizonStrip({ heading, moonAzimuth }) {
   return (
     <canvas
       ref={canvasRef}
-      style={{ display: 'block', width: '100%', height: '80px' }}
+      style={{ display: 'block', width: '100%', height: '60px' }}
     />
   )
 }

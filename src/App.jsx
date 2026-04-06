@@ -115,7 +115,7 @@ function App() {
 
         {/* Lock on ring with floating moon */}
         {(() => {
-          const maxOffset = 150
+          const maxOffset = 200
 
           const offsetX = heading !== null && moonAzimuthDeg !== null
             ? (() => {
@@ -139,7 +139,7 @@ function App() {
               delta={delta || 0}
               offsetX={offsetX}
               offsetY={offsetY}
-              size="85vw"
+              size="95vw"
             />
           )
         })()}
