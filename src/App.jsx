@@ -110,15 +110,15 @@ function App() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: '32px 0 24px',
-        gap: '24px',
+        padding: '16px 0 16px',
+        gap: '16px',
       }}>
 
         {/* Lock on ring + moon canvas */}
-        <LockOnRing isLocked={isLocked} delta={delta || 0} size={220}>
-          <MoonCanvas size={220} />
+        <LockOnRing isLocked={isLocked} delta={delta || 0} size={300}>
+          <MoonCanvas size={280} />
         </LockOnRing>
-
+        
         {/* Instruction */}
         <p style={{
           fontSize: '1.1rem',

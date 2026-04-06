@@ -1,34 +1,33 @@
-function LockOnRing({ isLocked, delta, size = 220, children }) {
-  const ringSize = size + 20
-  const gap = isLocked ? 0 : Math.min(delta * 0.3, 30)
+function LockOnRing({ isLocked, delta, size = 280, children }) {
+  const gap = isLocked ? 0 : Math.min((delta || 0) * 0.3, 20)
 
   return (
     <div style={{
       position: 'relative',
-      width: `${ringSize}px`,
-      height: `${ringSize}px`,
+      width: `${size}px`,
+      height: `${size}px`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
     }}>
       <svg
-        width={ringSize}
-        height={ringSize}
+        width={size}
+        height={size}
         style={{ position: 'absolute', top: 0, left: 0 }}
       >
         <rect
           x={gap / 2}
           y={gap / 2}
-          width={ringSize - gap}
-          height={ringSize - gap}
-          rx={isLocked ? '36' : '42'}
-          ry={isLocked ? '36' : '42'}
+          width={size - gap}
+          height={size - gap}
+          rx="32"
+          ry="32"
           fill="none"
-          stroke={isLocked ? '#fffbe8' : '#ffffff30'}
+          stroke={isLocked ? '#fffbe8' : '#ffffff25'}
           strokeWidth={isLocked ? '1.5' : '1'}
           style={{
-            transition: 'all 0.3s ease',
-            filter: isLocked ? 'drop-shadow(0 0 8px #fffbe888)' : 'none',
+            transition: 'all 0.4s ease',
+            filter: isLocked ? 'drop-shadow(0 0 10px #fffbe866)' : 'none',
           }}
         />
       </svg>
