@@ -1,5 +1,3 @@
-import { getNASAMoonFrameURL } from './utils/moonPhase'
-
 import { useState, useEffect, useRef } from 'react'
 import { useLocation } from './hooks/useLocation'
 import { useMoonData } from './hooks/useMoonData'
@@ -7,6 +5,7 @@ import { useCompass } from './hooks/useCompass'
 import { useWeather } from './hooks/useWeather'
 import { useClock } from './hooks/useClock'
 import { getAltitudeInstruction } from './utils/altitudeInstruction'
+import { getNASAMoonFrameURL } from './utils/moonPhase'
 
 useEffect(() => {
   const img = new Image()
