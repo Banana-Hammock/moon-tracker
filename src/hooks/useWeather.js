@@ -14,8 +14,8 @@ export function useWeather(location) {
           params: {
             latitude: location.lat,
             longitude: location.lon,
-            current: 'temperature_2m,cloudcover,weathercode,windspeed_10m,relativehumidity_2m',
-            hourly: 'cloudcover',
+            current: 'temperature_2m,cloud_cover,weather_code,wind_speed_10m,relative_humidity_2m',
+            hourly: 'cloud_cover',
             timezone: 'auto',
             forecast_days: 1,
           }
@@ -23,10 +23,10 @@ export function useWeather(location) {
 
         setWeather({
           temperature: res.data.current.temperature_2m,
-          cloudcover: res.data.current.cloudcover,
-          windspeed: res.data.current.windspeed_10m,
-          humidity: res.data.current.relativehumidity_2m,
-          hourlyCloudcover: res.data.hourly.cloudcover,
+          cloudcover: res.data.current.cloud_cover,
+          windspeed: res.data.current.wind_speed_10m,
+          humidity: res.data.current.relative_humidity_2m,
+          hourlyCloudcover: res.data.hourly.cloud_cover,
           hourlyTimes: res.data.hourly.time,
         })
       } catch (err) {

@@ -66,7 +66,7 @@ function Dashboard({ moonData, weather, heading }) {
       gap: '10px',
     }}>
 
-      {/* Row 1: Compass (left, no label) + Visibility + Cloud/Temp (right) */}
+      {/* Row 1: Compass (left) + Visibility + Cloud/Temp (right) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'stretch' }}>
 
         <div style={{
@@ -91,7 +91,7 @@ function Dashboard({ moonData, weather, heading }) {
 
       </div>
 
-      {/* Row 2: Rise/Set (left) + Moon Phase (right) */}
+      {/* Row 2: Rise/Set (left) + Moon Phase (right, no label) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'stretch' }}>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -99,32 +99,42 @@ function Dashboard({ moonData, weather, heading }) {
           <DashCard label="Set Time" value={formatTime(moonData.set)} style={{ flex: 1 }} />
         </div>
 
-        <DashCard label="Moon Phase" style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{
+          background: '#ffffff08',
+          border: '0.5px solid #ffffff15',
+          borderRadius: '16px',
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '10px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          <style>{`
+            @keyframes moonPulse {
+              0%   { transform: scale(1.0); }
+              40%  { transform: scale(1.05); }
+              50%  { transform: scale(1.0); }
+              100% { transform: scale(1.0); }
+            }
+          `}</style>
+          <MoonCanvas size="90px" />
           <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flex: 1,
-            paddingTop: '8px',
+            fontFamily: 'Funnel Display, sans-serif',
+            fontWeight: '700',
+            fontSize: '0.9rem',
+            color: 'var(--text)',
+            textAlign: 'center',
           }}>
-            <MoonCanvas size="90px" />
-            <div style={{
-              fontFamily: 'Funnel Display, sans-serif',
-              fontWeight: '700',
-              fontSize: '0.9rem',
-              color: 'var(--text)',
-              textAlign: 'center',
-            }}>
-              {phaseName}
-            </div>
+            {phaseName}
           </div>
-        </DashCard>
+        </div>
 
       </div>
 
-      {/* Best viewing window - full width, 1.5x height */}
+      {/* Best viewing window */}
       <div style={{ minHeight: '150px' }}>
         <ViewingWindow
           hourlyCloudcover={weather?.hourlyCloudcover}
@@ -134,7 +144,7 @@ function Dashboard({ moonData, weather, heading }) {
         />
       </div>
 
-      {/* Row 3: Illumination, Wind, Humidity, Altitude — 4 in a row */}
+      {/* Row 3: Illumination, Wind, Humidity, Altitude */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
         <DashCard label="Illum." value={`${illumination}%`} />
         <DashCard label="Wind" value={weather?.windspeed !== undefined ? `${Math.round(weather.windspeed)}` : '--'} />

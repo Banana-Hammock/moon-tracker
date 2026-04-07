@@ -23,8 +23,18 @@ function App() {
   const horizonRef = useRef(null)
 
   useEffect(() => {
-    const img = new Image()
-    img.src = getNASAMoonFrameURL()
+    // Preload current hour
+    const img1 = new Image()
+    img1.src = getNASAMoonFrameURL()
+
+    // Preload next hour
+    const now = new Date()
+    const nextHour = new Date(now.getTime() + 3600000)
+    const start = new Date(Date.UTC(2026, 0, 1))
+    const hours = Math.floor((nextHour - start) / (1000 * 60 * 60))
+    const frame = String(Math.min(hours + 1, 8760)).padStart(4, '0')
+    const img2 = new Image()
+    img2.src = `https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005587/frames/730x730_1x1_30p/moon.${frame}.jpg`
   }, [])
 
   useEffect(() => {
@@ -60,7 +70,7 @@ function App() {
   const isLocked = delta <= 5 && Math.abs(deltaAlt) <= 10
 
   const pxPerDegree = 6
-  const offsetX = -deltaAz * pxPerDegree
+  const offsetX = deltaAz * pxPerDegree
   const offsetY = deltaAlt * pxPerDegree
 
   const instruction = moonData
