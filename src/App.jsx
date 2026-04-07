@@ -6,12 +6,6 @@ import { useWeather } from './hooks/useWeather'
 import { useClock } from './hooks/useClock'
 import { getAltitudeInstruction } from './utils/altitudeInstruction'
 import { getNASAMoonFrameURL } from './utils/moonPhase'
-
-useEffect(() => {
-  const img = new Image()
-  img.src = getNASAMoonFrameURL()
-}, [])
-
 import HorizonStrip from './components/HorizonStrip'
 import StickyHeader from './components/StickyHeader'
 import LockOnRing from './components/LockOnRing'
@@ -27,6 +21,11 @@ function App() {
   const { hours, minutes, seconds, day, date } = useClock()
   const [stickyVisible, setStickyVisible] = useState(false)
   const horizonRef = useRef(null)
+
+  useEffect(() => {
+    const img = new Image()
+    img.src = getNASAMoonFrameURL()
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
