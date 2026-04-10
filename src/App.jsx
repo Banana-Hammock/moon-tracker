@@ -14,7 +14,7 @@ import Dashboard from './components/Dashboard'
 import Footer from './components/Footer'
 
 function App() {
-  const { location } = useLocation()
+  const { location, city } = useLocation()
   const moonData = useMoonData(location)
   const { heading, beta, gamma } = useCompass()
   const { weather } = useWeather(location)
@@ -69,9 +69,9 @@ function App() {
   const delta = Math.abs(deltaAz)
   const isLocked = delta <= 5 && Math.abs(deltaAlt) <= 10
 
-  const pxPerDegree = 6
+  const pxPerDegree = 3
   const offsetX = deltaAz * pxPerDegree
-  const offsetY = deltaAlt * pxPerDegree
+  const offsetY = -deltaAlt * pxPerDegree
 
   const instruction = moonData
     ? isLocked
@@ -159,7 +159,7 @@ function App() {
           {instruction}
         </p>
 
-        <KPIGrid moonData={moonData} weather={weather} />
+        <KPIGrid moonData={moonData} weather={weather} city={city} />
 
       </div>
 

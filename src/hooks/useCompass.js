@@ -6,14 +6,38 @@ export function useCompass() {
   const [gamma, setGamma] = useState(null)
   const [error, setError] = useState(null)
   const receivedData = useRef(false)
+  const smoothedHeading = useRef(null)
+  const smoothedBeta = useRef(null)
 
   useEffect(() => {
+    const ALPHA = 0.15 // lower = smoother but more lag, higher = more responsive
+
     const handleAbsolute = (event) => {
       if (event.alpha === null) return
       receivedData.current = true
-      const h = (360 - event.alpha + 360) % 360
-      setHeading(h)
-      setBeta(event.beta)
+
+      const raw = (360 - event.alpha + 360) % 360
+
+      // Low-pass filter for heading — handle 0/360 wraparound
+      if (smoothedHeading.current === null) {
+        smoothedHeading.current = raw
+      } else {
+        let diff = raw - smoothedHeading.current
+        if (diff > 180) diff -= 360
+        if (diff < -180) diff += 360
+        smoothedHeading.current = smoothedHeading.current + ALPHA * diff
+        smoothedHeading.current = (smoothedHeading.current + 360) % 360
+      }
+
+      // Low-pass filter for beta
+      if (smoothedBeta.current === null) {
+        smoothedBeta.current = event.beta
+      } else {
+        smoothedBeta.current = smoothedBeta.current + ALPHA * (event.beta - smoothedBeta.current)
+      }
+
+      setHeading(Math.round(smoothedHeading.current * 10) / 10)
+      setBeta(Math.round(smoothedBeta.current * 10) / 10)
       setGamma(event.gamma)
     }
 

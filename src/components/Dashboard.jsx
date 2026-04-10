@@ -100,7 +100,7 @@ function Dashboard({ moonData, weather, heading }) {
         </div>
 
         <div style={{
-          background: '#ffffff08',
+          background: '#000000',
           border: '0.5px solid #ffffff15',
           borderRadius: '16px',
           padding: '16px',
@@ -135,7 +135,7 @@ function Dashboard({ moonData, weather, heading }) {
       </div>
 
       {/* Best viewing window */}
-      <div style={{ minHeight: '150px' }}>
+      <div>
         <ViewingWindow
           hourlyCloudcover={weather?.hourlyCloudcover}
           hourlyTimes={weather?.hourlyTimes}

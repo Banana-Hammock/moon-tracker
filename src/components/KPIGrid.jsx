@@ -37,10 +37,9 @@ function KPICard({ label, value, sub }) {
   )
 }
 
-function KPIGrid({ moonData, weather }) {
+function KPIGrid({ moonData, weather, city }) {
   const now = new Date()
 
-  // Dynamic moon set/rise KPI
   let moonTimerLabel = '--'
   let moonTimerValue = '--'
 
@@ -49,21 +48,21 @@ function KPIGrid({ moonData, weather }) {
     const setTime = moonData.set ? new Date(moonData.set) : null
     const moonIsUp = moonData.altitude > 0
 
-    if (moonIsUp && setTime) {
+    if (moonIsUp && setTime && setTime > now) {
       moonTimerLabel = 'Moon Sets In'
       moonTimerValue = formatMoonSetCountdown(setTime)
     } else if (!moonIsUp && riseTime && riseTime > now) {
       moonTimerLabel = 'Moon Rises In'
       moonTimerValue = formatMoonSetCountdown(riseTime)
+    } else if (!moonIsUp && riseTime && riseTime <= now) {
+      // Moon rose earlier today, get tomorrow's rise — show set time instead
+      moonTimerLabel = 'Moon Rises In'
+      moonTimerValue = '--'
     } else {
       moonTimerLabel = 'Moon Sets In'
       moonTimerValue = '--'
     }
   }
-
-  const temp = weather?.temperature !== undefined
-    ? `${Math.round(weather.temperature)}°C`
-    : '--'
 
   const cloudcover = weather?.cloudcover !== undefined
     ? `${weather.cloudcover}%`
@@ -86,7 +85,7 @@ function KPIGrid({ moonData, weather }) {
       padding: '0 20px',
     }}>
       <KPICard label={moonTimerLabel} value={moonTimerValue} />
-      <KPICard label="Temperature" value={temp} />
+      <KPICard label="Location" value={city || '...'} />
       <KPICard label="Visibility" value={visibility} />
       <KPICard label="Cloud Cover" value={cloudcover} />
     </div>
