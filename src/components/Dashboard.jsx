@@ -5,12 +5,12 @@ import MoonCanvas from './MoonCanvas'
 
 function DashCard({ label, value, children, style, labelSize }) {
   const textColor = style?.color || 'var(--text)'
-  const labelColor = style?.labelColor || 'var(--secondary)'
+  const labelColor = style?.labelColor || 'var(--text)'
 
   return (
     <div style={{
       background: '#ffffff08',
-      border: '0.5px solid #ffffff15',
+      border: 'none',
       borderRadius: '16px',
       padding: '16px',
       display: 'flex',
@@ -70,15 +70,15 @@ function Dashboard({ moonData, weather, heading }) {
   }
 
   const lightBlueCard = {
-    background: '#daf5fd',
+    background: 'var(--text)',
     border: 'none',
     color: 'var(--background)',
     labelColor: 'var(--background)',
   }
 
   const blackCard = {
-    background: '#000000',
-    border: '0.5px solid #ffffff10',
+    background: 'var(--black)',
+    border: 'none',
     color: 'var(--text)',
     labelColor: 'var(--text)',
   }
@@ -96,7 +96,7 @@ function Dashboard({ moonData, weather, heading }) {
 
         <div style={{
           background: '#ffffff08',
-          border: '0.5px solid #ffffff15',
+          border: 'none',
           borderRadius: '16px',
           padding: '12px',
           display: 'flex',
@@ -125,7 +125,7 @@ function Dashboard({ moonData, weather, heading }) {
 
         <div style={{
           background: '#000000',
-          border: '0.5px solid #ffffff10',
+          border: 'none',
           borderRadius: '16px',
           padding: '16px',
           display: 'flex',
@@ -150,8 +150,8 @@ function Dashboard({ moonData, weather, heading }) {
 
       {/* Optimal Viewing Window — true black bg */}
       <div style={{
-        background: '#000000',
-        border: '0.5px solid #ffffff10',
+        background: 'var(--black)',
+        border: 'none',
         borderRadius: '16px',
         overflow: 'hidden',
       }}>
@@ -169,23 +169,23 @@ function Dashboard({ moonData, weather, heading }) {
           label="Illumination"
           value={`${illumination}%`}
           style={lightBlueCard}
-          labelSize="0.58rem"
+          labelSize="0.45rem"
         />
         <DashCard
           label="Altitude"
           value={`${altitudeDeg}°`}
           style={primaryCard}
-          labelSize="0.58rem"
+          labelSize="0.45rem"
         />
         <DashCard
-          label="Wind"
+          label="Wind Speed"
           value={weather?.windspeed !== undefined ? `${Math.round(weather.windspeed)}km/h` : '--'}
-          labelSize="0.58rem"
+          labelSize="0.45rem"
         />
         <DashCard
           label="Humidity"
           value={weather?.humidity !== undefined ? `${weather.humidity}%` : '--'}
-          labelSize="0.58rem"
+          labelSize="0.45rem"
         />
       </div>
 
