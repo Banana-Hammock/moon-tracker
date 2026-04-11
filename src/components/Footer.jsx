@@ -1,7 +1,7 @@
 function Footer() {
   return (
     <div style={{
-      background: 'var(--black)',
+      background: 'var(--primary)',
       padding: '32px 24px',
       display: 'flex',
       flexDirection: 'column',
@@ -12,13 +12,13 @@ function Footer() {
         fontFamily: 'Funnel Display, sans-serif',
         fontWeight: '700',
         fontSize: '1.2rem',
-        color: 'var(--text)',
-        letterSpacing: '0.15em',
+        color: 'var(--background)',
+        letterSpacing: '1.15em',
       }}>
         LOOK UP
       </div>
       <small style={{
-        color: 'var(--secondary)',
+        color: 'var(--black)',
         fontSize: '0.7rem',
         textAlign: 'center',
         lineHeight: 1.6,
@@ -27,7 +27,7 @@ function Footer() {
         Moon imagery by NASA LRO · Built with React + Vite
       </small>
       <small style={{
-        color: 'var(--secondary)',
+        color: 'var(--black)',
         fontSize: '0.65rem',
         opacity: 0.5,
       }}>

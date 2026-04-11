@@ -82,7 +82,7 @@ function Compass({ heading, moonAzimuth }) {
     // Needle angle
     const needleAngle = (-(heading || 0)) * Math.PI / 180
     const needleLen = r * 0.4
-    const needleBase = 3
+    const needleBase = 2.5
 
     // North needle — primary blue isosceles triangle
     ctx.beginPath()
