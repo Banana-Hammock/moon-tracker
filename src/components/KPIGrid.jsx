@@ -1,6 +1,6 @@
-import { formatMoonSetCountdown, formatTime } from '../utils/moonPhase'
+import { formatMoonSetCountdown } from '../utils/moonPhase'
 
-function KPICard({ label, value, sub }) {
+function KPICard({ label, value, style }) {
   return (
     <div style={{
       background: '#ffffff08',
@@ -10,12 +10,14 @@ function KPICard({ label, value, sub }) {
       display: 'flex',
       flexDirection: 'column',
       gap: '6px',
+      ...style,
     }}>
       <small style={{
-        color: 'var(--secondary)',
         fontSize: '0.7rem',
         letterSpacing: '0.08em',
         textTransform: 'uppercase',
+        color: style?.color ? `${style.color}99` : 'var(--secondary)',
+        opacity: 0.8,
       }}>
         {label}
       </small>
@@ -23,16 +25,11 @@ function KPICard({ label, value, sub }) {
         fontFamily: 'Funnel Display, sans-serif',
         fontWeight: '700',
         fontSize: '1.4rem',
-        color: 'var(--text)',
+        color: style?.color || 'var(--text)',
         lineHeight: 1,
       }}>
         {value}
       </div>
-      {sub && (
-        <small style={{ color: 'var(--secondary)', fontSize: '0.7rem' }}>
-          {sub}
-        </small>
-      )}
     </div>
   )
 }
@@ -54,12 +51,8 @@ function KPIGrid({ moonData, weather, city }) {
     } else if (!moonIsUp && riseTime && riseTime > now) {
       moonTimerLabel = 'Moon Rises In'
       moonTimerValue = formatMoonSetCountdown(riseTime)
-    } else if (!moonIsUp && riseTime && riseTime <= now) {
-      // Moon rose earlier today, get tomorrow's rise — show set time instead
-      moonTimerLabel = 'Moon Rises In'
-      moonTimerValue = '--'
     } else {
-      moonTimerLabel = 'Moon Sets In'
+      moonTimerLabel = moonIsUp ? 'Moon Sets In' : 'Moon Rises In'
       moonTimerValue = '--'
     }
   }
@@ -76,6 +69,18 @@ function KPIGrid({ moonData, weather, city }) {
     : 'Very Poor'
     : '--'
 
+  const primaryCard = {
+    background: 'var(--primary)',
+    border: 'none',
+    color: 'var(--background)',
+  }
+
+  const lightBlueCard = {
+    background: '#daf5fd',
+    border: 'none',
+    color: 'var(--background)',
+  }
+
   return (
     <div style={{
       display: 'grid',
@@ -86,8 +91,8 @@ function KPIGrid({ moonData, weather, city }) {
     }}>
       <KPICard label={moonTimerLabel} value={moonTimerValue} />
       <KPICard label="Location" value={city || '...'} />
-      <KPICard label="Visibility" value={visibility} />
-      <KPICard label="Cloud Cover" value={cloudcover} />
+      <KPICard label="Visibility" value={visibility} style={primaryCard} />
+      <KPICard label="Cloud Cover" value={cloudcover} style={lightBlueCard} />
     </div>
   )
 }

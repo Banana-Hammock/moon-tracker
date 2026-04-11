@@ -69,7 +69,7 @@ function App() {
   const delta = Math.abs(deltaAz)
   const isLocked = delta <= 5 && Math.abs(deltaAlt) <= 10
 
-  const pxPerDegree = 3
+  const pxPerDegree = 4
   const offsetX = deltaAz * pxPerDegree
   const offsetY = -deltaAlt * pxPerDegree
 
