@@ -66,21 +66,21 @@ function Dashboard({ moonData, weather, heading }) {
     background: 'var(--primary)',
     border: 'none',
     color: 'var(--text)',
-    labelColor: '#daf5fd88',
+    labelColor: 'var(--text)',
   }
 
   const lightBlueCard = {
     background: '#daf5fd',
     border: 'none',
     color: 'var(--background)',
-    labelColor: '#09061388',
+    labelColor: 'var(--background)',
   }
 
   const blackCard = {
     background: '#000000',
     border: '0.5px solid #ffffff10',
     color: 'var(--text)',
-    labelColor: '#daf5fd88',
+    labelColor: 'var(--text)',
   }
 
   return (
@@ -166,24 +166,24 @@ function Dashboard({ moonData, weather, heading }) {
       {/* Row 3: Illumination, Altitude, Wind Speed, Humidity */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
         <DashCard
-          label="Illum."
+          label="Illumination"
           value={`${illumination}%`}
           style={lightBlueCard}
           labelSize="0.58rem"
         />
         <DashCard
-          label="Alt."
+          label="Altitude"
           value={`${altitudeDeg}°`}
           style={primaryCard}
           labelSize="0.58rem"
         />
         <DashCard
-          label="Wind km/h"
-          value={weather?.windspeed !== undefined ? `${Math.round(weather.windspeed)}` : '--'}
+          label="Wind"
+          value={weather?.windspeed !== undefined ? `${Math.round(weather.windspeed)}km/h` : '--'}
           labelSize="0.58rem"
         />
         <DashCard
-          label="Humid."
+          label="Humidity"
           value={weather?.humidity !== undefined ? `${weather.humidity}%` : '--'}
           labelSize="0.58rem"
         />

@@ -22,14 +22,7 @@ function Compass({ heading, moonAzimuth }) {
     ctx.beginPath()
     ctx.arc(cx, cy, r, 0, Math.PI * 2)
     ctx.strokeStyle = '#000000'
-    ctx.lineWidth = 5
-    ctx.stroke()
-
-    // Gold ring on top
-    ctx.beginPath()
-    ctx.arc(cx, cy, r, 0, Math.PI * 2)
-    ctx.strokeStyle = '#d2bd5a'
-    ctx.lineWidth = 1.5
+    ctx.lineWidth = 7.5
     ctx.stroke()
 
     // Tick marks — floating inside, not touching boundary
@@ -44,7 +37,7 @@ function Compass({ heading, moonAzimuth }) {
       ctx.beginPath()
       ctx.moveTo(cx + Math.sin(angle) * outerR, cy - Math.cos(angle) * outerR)
       ctx.lineTo(cx + Math.sin(angle) * innerR, cy - Math.cos(angle) * innerR)
-      ctx.strokeStyle = isMajor ? '#d2bd5a' : '#d2bd5a55'
+      ctx.strokeStyle = isMajor ? '#d2bd5a' : '#fffbe8'
       ctx.lineWidth = isMajor ? 1.2 : 0.5
       ctx.stroke()
     }
@@ -52,9 +45,9 @@ function Compass({ heading, moonAzimuth }) {
     // Cardinal labels
     const cardinals = [
       { label: 'N', deg: 0, color: '#3427ce' },
-      { label: 'E', deg: 90, color: '#d2bd5a' },
-      { label: 'S', deg: 180, color: '#d2bd5a' },
-      { label: 'W', deg: 270, color: '#d2bd5a' },
+      { label: 'E', deg: 90, color: '#fffbe8' },
+      { label: 'S', deg: 180, color: '#fffbe8' },
+      { label: 'W', deg: 270, color: '#fffbe8' },
     ]
 
     cardinals.forEach(({ label, deg, color }) => {
@@ -88,7 +81,7 @@ function Compass({ heading, moonAzimuth }) {
 
     // Needle angle
     const needleAngle = (-(heading || 0)) * Math.PI / 180
-    const needleLen = r * 0.52
+    const needleLen = r * 0.45
     const needleBase = 7
 
     // North needle — primary blue isosceles triangle
@@ -148,10 +141,10 @@ function Compass({ heading, moonAzimuth }) {
           fontFamily: 'Be Vietnam Pro, sans-serif',
           fontSize: '0.75rem',
           fontWeight: '500',
-          color: '#d2bd5a',
+          color: '#fffbe8',
           letterSpacing: '0.05em',
         }}>
-          {azimuthDeg}° az
+          {azimuthDeg}°
         </div>
       )}
     </div>
