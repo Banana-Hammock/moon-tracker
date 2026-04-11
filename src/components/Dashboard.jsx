@@ -139,7 +139,7 @@ function Dashboard({ moonData, weather, heading }) {
           <div style={{
             fontFamily: 'Funnel Display, sans-serif',
             fontWeight: '700',
-            fontSize: '0.9rem',
+            fontSize: '1.4rem',
             color: 'var(--accent)',
             textAlign: 'center',
           }}>
