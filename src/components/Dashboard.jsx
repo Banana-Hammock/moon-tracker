@@ -164,7 +164,7 @@ function Dashboard({ moonData, weather, heading }) {
       </div>
 
       {/* Row 3: Illumination, Altitude, Wind Speed, Humidity */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
         <DashCard
           label="Illumination"
           value={`${illumination}%`}
@@ -182,11 +182,11 @@ function Dashboard({ moonData, weather, heading }) {
           value={weather?.windspeed !== undefined ? `${Math.round(weather.windspeed)}km/h` : '--'}
           labelSize="0.45rem"
         />
-        <DashCard
+        {/* <DashCard
           label="Humidity"
           value={weather?.humidity !== undefined ? `${weather.humidity}%` : '--'}
           labelSize="0.45rem"
-        />
+        /> */}
       </div>
 
       {/* Row 4: Distance + Lunar Age */}

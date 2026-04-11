@@ -25,8 +25,8 @@ function ViewingWindow({ hourlyCloudcover, hourlyTimes, moonRise, moonSet }) {
 
   return (
     <div style={{
-      background: '#ffffff08',
-      border: '0.5px solid #ffffff15',
+      background: '#000000',
+      border: 'none',
       borderRadius: '16px',
       padding: '16px',
       display: 'flex',
@@ -39,7 +39,7 @@ function ViewingWindow({ hourlyCloudcover, hourlyTimes, moonRise, moonSet }) {
         alignItems: 'center',
       }}>
         <small style={{
-          color: 'var(--secondary)',
+          color: 'var(--text)',
           fontSize: '0.7rem',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
