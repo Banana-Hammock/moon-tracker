@@ -17,13 +17,27 @@ function HorizonStrip({ heading, moonAzimuth }) {
     ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, width, height)
 
-    ctx.strokeStyle = '#ffffff20'
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(0, height / 2)
-    ctx.lineTo(width, height / 2)
-    ctx.stroke()
+    const centerY = height / 2
 
+    // Ruler tick marks every 5 degrees
+    for (let deg = 0; deg < 360; deg += 5) {
+      let diff = deg - (heading || 0)
+      if (diff > 180) diff -= 360
+      if (diff < -180) diff += 360
+      const x = width / 2 + (diff / 90) * (width / 2)
+      if (x < 0 || x > width) continue
+
+      const isMajor = deg % 45 === 0
+      const tickHeight = isMajor ? 8 : 4
+      ctx.beginPath()
+      ctx.moveTo(x, centerY + 2)
+      ctx.lineTo(x, centerY + 2 + tickHeight)
+      ctx.strokeStyle = isMajor ? '#d2bd5a88' : '#d2bd5a33'
+      ctx.lineWidth = isMajor ? 1 : 0.5
+      ctx.stroke()
+    }
+
+    // Cardinal direction labels
     const directions = [
       { label: 'N', deg: 0 },
       { label: 'NE', deg: 45 },
@@ -43,11 +57,12 @@ function HorizonStrip({ heading, moonAzimuth }) {
       if (x < 0 || x > width) return
 
       ctx.fillStyle = '#d2bd5a'
-      ctx.font = '600 13px Be Vietnam Pro, system-ui'
+      ctx.font = '500 11px Be Vietnam Pro, system-ui'
       ctx.textAlign = 'center'
-      ctx.fillText(label, x, height / 2 - 12)
+      ctx.fillText(label, x, centerY - 4)
     })
 
+    // Moon dot — smaller radius
     if (moonAzimuth !== undefined && moonAzimuth !== null) {
       const moonDeg = moonAzimuth * (180 / Math.PI) + 180
       let moonDiff = moonDeg - (heading || 0)
@@ -56,7 +71,7 @@ function HorizonStrip({ heading, moonAzimuth }) {
       const moonX = width / 2 + (moonDiff / 90) * (width / 2)
       if (moonX >= 0 && moonX <= width) {
         ctx.beginPath()
-        ctx.arc(moonX, height / 2, 8, 0, Math.PI * 2)
+        ctx.arc(moonX, centerY, 4, 0, Math.PI * 2)
         ctx.fillStyle = '#fffbe8'
         ctx.fill()
       }
@@ -67,7 +82,7 @@ function HorizonStrip({ heading, moonAzimuth }) {
   return (
     <canvas
       ref={canvasRef}
-      style={{ display: 'block', width: '100%', height: '60px' }}
+      style={{ display: 'block', width: '100%', height: '44px' }}
     />
   )
 }

@@ -11,7 +11,7 @@ function StickyHeader({ visible }) {
       right: 0,
       zIndex: 100,
       background: 'var(--black)',
-      padding: '12px 20px 10px',
+      padding: '10px 20px 8px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -22,17 +22,17 @@ function StickyHeader({ visible }) {
     }}>
       <div>
         <div style={{
-          fontSize: '0.75rem',
+          fontSize: '0.7rem',
           color: 'var(--secondary)',
           letterSpacing: '0.08em',
-          marginBottom: '2px'
+          marginBottom: '1px',
         }}>
           {day}, {date}
         </div>
         <div style={{
           fontFamily: 'Funnel Display, sans-serif',
           fontWeight: 475,
-          fontSize: '2rem',
+          fontSize: '1.6rem',
           color: 'var(--text)',
           letterSpacing: '0.05em',
           lineHeight: 1,

@@ -100,7 +100,7 @@ function App() {
             <div style={{
               fontFamily: 'Funnel Display, sans-serif',
               fontWeight: 475,
-              fontSize: '2rem',
+              fontSize: '1.6rem',
               color: 'var(--text)',
               letterSpacing: '0.05em',
               lineHeight: 1,
@@ -134,8 +134,8 @@ function App() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: '16px 0 16px',
-        gap: '16px',
+        padding: '16px 0 24px',
+        gap: '8px',
       }}>
 
         <LockOnRing
@@ -154,7 +154,8 @@ function App() {
           opacity: isLocked ? 1 : 0.7,
           transition: 'color 0.4s ease, opacity 0.4s ease',
           textAlign: 'center',
-          padding: '0 20px',
+          padding: '8px 20px 0',
+          marginBottom: '8px',
         }}>
           {instruction}
         </p>
