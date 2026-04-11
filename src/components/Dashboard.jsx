@@ -150,7 +150,7 @@ function Dashboard({ moonData, weather, heading }) {
 
       {/* Optimal Viewing Window — true black bg */}
       <div style={{
-        background: 'var(--black)',
+        background: '#000000',
         border: 'none',
         borderRadius: '16px',
         overflow: 'hidden',

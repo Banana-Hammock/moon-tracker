@@ -2,12 +2,12 @@ import { formatMoonSetCountdown } from '../utils/moonPhase'
 
 function KPICard({ label, value, style, valueFontSize }) {
   const textColor = style?.color || 'var(--text)'
-  const labelColor = style?.labelColor || 'var(--secondary)'
+  const labelColor = style?.labelColor || 'var(--text)'
 
   return (
     <div style={{
       background: '#ffffff08',
-      border: '0.5px solid #ffffff15',
+      border: 'none',
       borderRadius: '16px',
       padding: '16px',
       display: 'flex',
