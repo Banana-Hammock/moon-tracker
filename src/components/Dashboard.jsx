@@ -3,7 +3,7 @@ import ViewingWindow from './ViewingWindow'
 import { getMoonPhaseName, getMoonAge, formatTime } from '../utils/moonPhase'
 import MoonCanvas from './MoonCanvas'
 
-function DashCard({ label, value, children, style, labelSize }) {
+function DashCard({ label, value, children, style }) {
   const textColor = style?.color || 'var(--text)'
   const labelColor = style?.labelColor || 'var(--text)'
 
@@ -22,7 +22,7 @@ function DashCard({ label, value, children, style, labelSize }) {
       {label && (
         <small style={{
           color: labelColor,
-          fontSize: labelSize || '0.7rem',
+          fontSize: '0.7rem',
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
           lineHeight: 1.2,
@@ -169,24 +169,16 @@ function Dashboard({ moonData, weather, heading }) {
           label="Illumination"
           value={`${illumination}%`}
           style={lightBlueCard}
-          labelSize="0.45rem"
         />
         <DashCard
           label="Altitude"
           value={`${altitudeDeg}°`}
           style={primaryCard}
-          labelSize="0.45rem"
         />
         <DashCard
           label="Wind Speed"
           value={weather?.windspeed !== undefined ? `${Math.round(weather.windspeed)}km/h` : '--'}
-          labelSize="0.45rem"
         />
-        {/* <DashCard
-          label="Humidity"
-          value={weather?.humidity !== undefined ? `${weather.humidity}%` : '--'}
-          labelSize="0.45rem"
-        /> */}
       </div>
 
       {/* Row 4: Distance + Lunar Age */}
