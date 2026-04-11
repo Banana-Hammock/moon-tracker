@@ -84,7 +84,7 @@ function App() {
 
       <StickyHeader visible={stickyVisible} />
 
-      <div ref={horizonRef} style={{ background: 'var(--black)' }}>
+      <div ref={horizonRef} style={{ background: '#ffffff08' }}>
         <HorizonStrip heading={heading} moonAzimuth={moonData?.azimuth} />
 
         <div style={{ padding: '12px 20px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -102,7 +102,7 @@ function App() {
               fontWeight: 475,
               fontSize: '1.6rem',
               color: 'var(--text)',
-              letterSpacing: '0.05em',
+              letterSpacing: '0.01em',
               lineHeight: 1,
             }}>
               {hours}:{minutes}:{seconds}

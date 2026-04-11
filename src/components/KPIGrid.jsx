@@ -1,6 +1,9 @@
 import { formatMoonSetCountdown } from '../utils/moonPhase'
 
-function KPICard({ label, value, style }) {
+function KPICard({ label, value, style, valueFontSize }) {
+  const textColor = style?.color || 'var(--text)'
+  const labelColor = style?.labelColor || 'var(--secondary)'
+
   return (
     <div style={{
       background: '#ffffff08',
@@ -16,16 +19,15 @@ function KPICard({ label, value, style }) {
         fontSize: '0.7rem',
         letterSpacing: '0.08em',
         textTransform: 'uppercase',
-        color: style?.color ? `${style.color}99` : 'var(--secondary)',
-        opacity: 0.8,
+        color: labelColor,
       }}>
         {label}
       </small>
       <div style={{
         fontFamily: 'Funnel Display, sans-serif',
         fontWeight: '700',
-        fontSize: '1.4rem',
-        color: style?.color || 'var(--text)',
+        fontSize: valueFontSize || '1.4rem',
+        color: textColor,
         lineHeight: 1,
       }}>
         {value}
@@ -57,9 +59,7 @@ function KPIGrid({ moonData, weather, city }) {
     }
   }
 
-  const cloudcover = weather?.cloudcover !== undefined
-    ? `${weather.cloudcover}%`
-    : '--'
+  const cloudcover = weather?.cloudcover !== undefined ? `${weather.cloudcover}%` : '--'
 
   const visibility = weather?.cloudcover !== undefined
     ? weather.cloudcover <= 20 ? 'Excellent'
@@ -72,13 +72,15 @@ function KPIGrid({ moonData, weather, city }) {
   const primaryCard = {
     background: 'var(--primary)',
     border: 'none',
-    color: 'var(--background)',
+    color: 'var(--text)',
+    labelColor: '#daf5fd99',
   }
 
   const lightBlueCard = {
     background: '#daf5fd',
     border: 'none',
     color: 'var(--background)',
+    labelColor: '#09061399',
   }
 
   return (
@@ -91,7 +93,12 @@ function KPIGrid({ moonData, weather, city }) {
     }}>
       <KPICard label={moonTimerLabel} value={moonTimerValue} />
       <KPICard label="Location" value={city || '...'} />
-      <KPICard label="Visibility" value={visibility} style={primaryCard} />
+      <KPICard
+        label="Visibility"
+        value={visibility}
+        style={primaryCard}
+        valueFontSize="1.6rem"
+      />
       <KPICard label="Cloud Cover" value={cloudcover} style={lightBlueCard} />
     </div>
   )

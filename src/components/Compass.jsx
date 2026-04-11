@@ -14,103 +14,147 @@ function Compass({ heading, moonAzimuth }) {
 
     const cx = size / 2
     const cy = size / 2
-    const r = size / 2 - 10
+    const r = size / 2 - 6
 
     ctx.clearRect(0, 0, size, size)
 
+    // Thick true-black outer ring
+    ctx.beginPath()
+    ctx.arc(cx, cy, r, 0, Math.PI * 2)
+    ctx.strokeStyle = '#000000'
+    ctx.lineWidth = 5
+    ctx.stroke()
+
+    // Gold ring on top
     ctx.beginPath()
     ctx.arc(cx, cy, r, 0, Math.PI * 2)
     ctx.strokeStyle = '#d2bd5a'
     ctx.lineWidth = 1.5
     ctx.stroke()
 
+    // Tick marks — floating inside, not touching boundary
+    const tickGap = 8 // gap from outer ring
     for (let i = 0; i < 72; i++) {
       const angle = (i * 5 - (heading || 0)) * Math.PI / 180
       const isMajor = i % 9 === 0
-      const inner = r - (isMajor ? 10 : 5)
+      const tickLen = isMajor ? 10 : 5
+      const outerR = r - tickGap
+      const innerR = outerR - tickLen
+
       ctx.beginPath()
-      ctx.moveTo(cx + Math.sin(angle) * inner, cy - Math.cos(angle) * inner)
-      ctx.lineTo(cx + Math.sin(angle) * r, cy - Math.cos(angle) * r)
+      ctx.moveTo(cx + Math.sin(angle) * outerR, cy - Math.cos(angle) * outerR)
+      ctx.lineTo(cx + Math.sin(angle) * innerR, cy - Math.cos(angle) * innerR)
       ctx.strokeStyle = isMajor ? '#d2bd5a' : '#d2bd5a55'
-      ctx.lineWidth = isMajor ? 1.5 : 0.5
+      ctx.lineWidth = isMajor ? 1.2 : 0.5
       ctx.stroke()
     }
 
+    // Cardinal labels
     const cardinals = [
-      { label: 'N', deg: 0 },
-      { label: 'E', deg: 90 },
-      { label: 'S', deg: 180 },
-      { label: 'W', deg: 270 },
+      { label: 'N', deg: 0, color: '#3427ce' },
+      { label: 'E', deg: 90, color: '#d2bd5a' },
+      { label: 'S', deg: 180, color: '#d2bd5a' },
+      { label: 'W', deg: 270, color: '#d2bd5a' },
     ]
 
-    cardinals.forEach(({ label, deg }) => {
+    cardinals.forEach(({ label, deg, color }) => {
       const angle = (deg - (heading || 0)) * Math.PI / 180
-      const labelR = r - 22
+      const labelR = r - 28
       const x = cx + Math.sin(angle) * labelR
       const y = cy - Math.cos(angle) * labelR
-      ctx.fillStyle = label === 'N' ? '#d2492d' : '#d2bd5a'
+      ctx.fillStyle = color
       ctx.font = '600 12px Be Vietnam Pro, system-ui'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(label, x, y)
     })
 
-    // Moon dot — smaller
+    // Moon dot — soft edges with radial gradient
     if (moonAzimuth !== undefined && moonAzimuth !== null) {
       const moonDeg = moonAzimuth * (180 / Math.PI) + 180
       const moonAngle = (moonDeg - (heading || 0)) * Math.PI / 180
-      const moonX = cx + Math.sin(moonAngle) * (r - 5)
-      const moonY = cy - Math.cos(moonAngle) * (r - 5)
+      const moonX = cx + Math.sin(moonAngle) * (r - tickGap - 2)
+      const moonY = cy - Math.cos(moonAngle) * (r - tickGap - 2)
+
+      const moonGrad = ctx.createRadialGradient(moonX, moonY, 0, moonX, moonY, 4)
+      moonGrad.addColorStop(0, '#fffbe8ff')
+      moonGrad.addColorStop(0.6, '#fffbe8cc')
+      moonGrad.addColorStop(1, '#fffbe800')
       ctx.beginPath()
-      ctx.arc(moonX, moonY, 3, 0, Math.PI * 2)
-      ctx.fillStyle = '#fffbe8'
+      ctx.arc(moonX, moonY, 4, 0, Math.PI * 2)
+      ctx.fillStyle = moonGrad
       ctx.fill()
     }
 
+    // Needle angle
     const needleAngle = (-(heading || 0)) * Math.PI / 180
-    const needleLength = r * 0.55
-    const needleWidth = 6
+    const needleLen = r * 0.52
+    const needleBase = 7
 
+    // North needle — primary blue isosceles triangle
     ctx.beginPath()
-    ctx.moveTo(cx + Math.sin(needleAngle - 0.15) * needleWidth, cy - Math.cos(needleAngle - 0.15) * needleWidth)
-    ctx.lineTo(cx + Math.sin(needleAngle) * needleLength, cy - Math.cos(needleAngle) * needleLength)
-    ctx.lineTo(cx + Math.sin(needleAngle + 0.15) * needleWidth, cy - Math.cos(needleAngle + 0.15) * needleWidth)
+    ctx.moveTo(
+      cx + Math.sin(needleAngle) * needleLen,
+      cy - Math.cos(needleAngle) * needleLen
+    )
+    ctx.lineTo(
+      cx + Math.sin(needleAngle + Math.PI / 2) * needleBase,
+      cy - Math.cos(needleAngle + Math.PI / 2) * needleBase
+    )
+    ctx.lineTo(
+      cx + Math.sin(needleAngle - Math.PI / 2) * needleBase,
+      cy - Math.cos(needleAngle - Math.PI / 2) * needleBase
+    )
     ctx.closePath()
-    ctx.fillStyle = '#d2492d'
+    ctx.fillStyle = '#3427ce'
     ctx.fill()
 
+    // South needle — white isosceles triangle, same proportions
     ctx.beginPath()
-    ctx.moveTo(cx + Math.sin(needleAngle - 0.15 + Math.PI) * needleWidth, cy - Math.cos(needleAngle - 0.15 + Math.PI) * needleWidth)
-    ctx.lineTo(cx + Math.sin(needleAngle + Math.PI) * needleLength, cy - Math.cos(needleAngle + Math.PI) * needleLength)
-    ctx.lineTo(cx + Math.sin(needleAngle + 0.15 + Math.PI) * needleWidth, cy - Math.cos(needleAngle + 0.15 + Math.PI) * needleWidth)
+    ctx.moveTo(
+      cx + Math.sin(needleAngle + Math.PI) * needleLen,
+      cy - Math.cos(needleAngle + Math.PI) * needleLen
+    )
+    ctx.lineTo(
+      cx + Math.sin(needleAngle + Math.PI / 2) * needleBase,
+      cy - Math.cos(needleAngle + Math.PI / 2) * needleBase
+    )
+    ctx.lineTo(
+      cx + Math.sin(needleAngle - Math.PI / 2) * needleBase,
+      cy - Math.cos(needleAngle - Math.PI / 2) * needleBase
+    )
     ctx.closePath()
     ctx.fillStyle = '#daf5fd'
     ctx.fill()
 
-    ctx.beginPath()
-    ctx.arc(cx, cy, 4, 0, Math.PI * 2)
-    ctx.fillStyle = '#d2bd5a'
-    ctx.fill()
-
-    const azimuthDeg = moonAzimuth !== undefined
-      ? Math.round(((moonAzimuth * 180 / Math.PI) + 180 + 360) % 360)
-      : null
-
-    if (azimuthDeg !== null) {
-      ctx.fillStyle = '#d2bd5a'
-      ctx.font = '500 10px Be Vietnam Pro, system-ui'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillText(`${azimuthDeg}° az`, cx, cy + r * 0.72)
-    }
-
   }, [heading, moonAzimuth])
 
+  // Azimuth — fixed bottom right, doesn't rotate
+  const azimuthDeg = moonAzimuth !== undefined && moonAzimuth !== null
+    ? Math.round(((moonAzimuth * 180 / Math.PI) + 180 + 360) % 360)
+    : null
+
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ width: '100%', aspectRatio: '1', display: 'block' }}
-    />
+    <div style={{ position: 'relative', width: '100%' }}>
+      <canvas
+        ref={canvasRef}
+        style={{ width: '100%', aspectRatio: '1', display: 'block' }}
+      />
+      {azimuthDeg !== null && (
+        <div style={{
+          position: 'absolute',
+          bottom: '8px',
+          right: '8px',
+          fontFamily: 'Be Vietnam Pro, sans-serif',
+          fontSize: '0.75rem',
+          fontWeight: '500',
+          color: '#d2bd5a',
+          letterSpacing: '0.05em',
+        }}>
+          {azimuthDeg}° az
+        </div>
+      )}
+    </div>
   )
 }
 

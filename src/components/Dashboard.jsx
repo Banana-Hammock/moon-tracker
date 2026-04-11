@@ -3,11 +3,9 @@ import ViewingWindow from './ViewingWindow'
 import { getMoonPhaseName, getMoonAge, formatTime } from '../utils/moonPhase'
 import MoonCanvas from './MoonCanvas'
 
-function DashCard({ label, value, children, style }) {
+function DashCard({ label, value, children, style, labelSize }) {
   const textColor = style?.color || 'var(--text)'
-  const labelColor = style?.color
-    ? `${style.color}99`
-    : 'var(--secondary)'
+  const labelColor = style?.labelColor || 'var(--secondary)'
 
   return (
     <div style={{
@@ -24,9 +22,10 @@ function DashCard({ label, value, children, style }) {
       {label && (
         <small style={{
           color: labelColor,
-          fontSize: '0.7rem',
-          letterSpacing: '0.08em',
+          fontSize: labelSize || '0.7rem',
+          letterSpacing: '0.06em',
           textTransform: 'uppercase',
+          lineHeight: 1.2,
         }}>
           {label}
         </small>
@@ -66,17 +65,22 @@ function Dashboard({ moonData, weather, heading }) {
   const primaryCard = {
     background: 'var(--primary)',
     border: 'none',
-    color: 'var(--background)',
+    color: 'var(--text)',
+    labelColor: '#daf5fd88',
   }
+
   const lightBlueCard = {
     background: '#daf5fd',
     border: 'none',
     color: 'var(--background)',
+    labelColor: '#09061388',
   }
+
   const blackCard = {
     background: '#000000',
     border: '0.5px solid #ffffff10',
     color: 'var(--text)',
+    labelColor: '#daf5fd88',
   }
 
   return (
@@ -89,11 +93,12 @@ function Dashboard({ moonData, weather, heading }) {
 
       {/* Row 1: Compass + Visibility + Cloud/Temp */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'stretch' }}>
+
         <div style={{
           background: '#ffffff08',
           border: '0.5px solid #ffffff15',
           borderRadius: '16px',
-          padding: '16px',
+          padding: '12px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -110,8 +115,9 @@ function Dashboard({ moonData, weather, heading }) {
         </div>
       </div>
 
-      {/* Row 2: Rise/Set + Moon Phase */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'stretch' }}>
+      {/* Row 2: Rise/Set + Moon Phase — equal heights */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <DashCard label="Rise Time" value={formatTime(moonData.rise)} style={{ flex: 1, ...primaryCard }} />
           <DashCard label="Set Time" value={formatTime(moonData.set)} style={{ flex: 1 }} />
@@ -127,6 +133,7 @@ function Dashboard({ moonData, weather, heading }) {
           alignItems: 'center',
           justifyContent: 'center',
           gap: '10px',
+          minHeight: '160px',
         }}>
           <MoonCanvas size="70px" />
           <div style={{
@@ -141,20 +148,45 @@ function Dashboard({ moonData, weather, heading }) {
         </div>
       </div>
 
-      {/* Optimal Viewing Window */}
-      <ViewingWindow
-        hourlyCloudcover={weather?.hourlyCloudcover}
-        hourlyTimes={weather?.hourlyTimes}
-        moonRise={moonData.rise}
-        moonSet={moonData.set}
-      />
+      {/* Optimal Viewing Window — true black bg */}
+      <div style={{
+        background: '#000000',
+        border: '0.5px solid #ffffff10',
+        borderRadius: '16px',
+        overflow: 'hidden',
+      }}>
+        <ViewingWindow
+          hourlyCloudcover={weather?.hourlyCloudcover}
+          hourlyTimes={weather?.hourlyTimes}
+          moonRise={moonData.rise}
+          moonSet={moonData.set}
+        />
+      </div>
 
-      {/* Row 3: Illumination, Altitude, Wind, Humidity — swapped wind/altitude */}
+      {/* Row 3: Illumination, Altitude, Wind Speed, Humidity */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
-        <DashCard label="Illum." value={`${illumination}%`} style={lightBlueCard} />
-        <DashCard label="Alt." value={`${altitudeDeg}°`} style={primaryCard} />
-        <DashCard label="Wind" value={weather?.windspeed !== undefined ? `${Math.round(weather.windspeed)}` : '--'} />
-        <DashCard label="Humid." value={weather?.humidity !== undefined ? `${weather.humidity}%` : '--'} />
+        <DashCard
+          label="Illum."
+          value={`${illumination}%`}
+          style={lightBlueCard}
+          labelSize="0.58rem"
+        />
+        <DashCard
+          label="Alt."
+          value={`${altitudeDeg}°`}
+          style={primaryCard}
+          labelSize="0.58rem"
+        />
+        <DashCard
+          label="Wind km/h"
+          value={weather?.windspeed !== undefined ? `${Math.round(weather.windspeed)}` : '--'}
+          labelSize="0.58rem"
+        />
+        <DashCard
+          label="Humid."
+          value={weather?.humidity !== undefined ? `${weather.humidity}%` : '--'}
+          labelSize="0.58rem"
+        />
       </div>
 
       {/* Row 4: Distance + Lunar Age */}

@@ -34,7 +34,7 @@ function StickyHeader({ visible }) {
           fontWeight: 475,
           fontSize: '1.6rem',
           color: 'var(--text)',
-          letterSpacing: '0.05em',
+          letterSpacing: '0.01em',
           lineHeight: 1,
         }}>
           {hours}:{minutes}:{seconds}
