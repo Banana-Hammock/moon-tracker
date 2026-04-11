@@ -73,14 +73,14 @@ function KPIGrid({ moonData, weather, city }) {
     background: 'var(--primary)',
     border: 'none',
     color: 'var(--text)',
-    labelColor: '#daf5fd99',
+    labelColor: 'var(--text)',
   }
 
   const lightBlueCard = {
     background: '#daf5fd',
     border: 'none',
     color: 'var(--background)',
-    labelColor: '#09061399',
+    labelColor: 'var(--background)',
   }
 
   return (
