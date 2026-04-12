@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 const CRESCENT_URL = 'https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005587/frames/730x730_1x1_30p/moon.0200.jpg'
 
-function LockOnRing({ isLocked, offsetX, offsetY, size = '85vw' }) {
+function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
   const [imgLoaded, setImgLoaded] = useState(false)
 
   const getNASAUrl = () => {
