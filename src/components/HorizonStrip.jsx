@@ -70,12 +70,12 @@ function HorizonStrip({ heading, moonAzimuth }) {
       if (moonDiff < -180) moonDiff += 360
       const moonX = width / 2 + (moonDiff / 90) * (width / 2)
       if (moonX >= 0 && moonX <= width) {
-        const moonGrad = ctx.createRadialGradient(moonX, centerY, 0, moonX, centerY, 5)
+        const moonGrad = ctx.createRadialGradient(moonX, centerY, 0, moonX, centerY, 4)
         moonGrad.addColorStop(0, '#fffbe8ff')
-        moonGrad.addColorStop(0.5, '#fffbe8cc')
+        moonGrad.addColorStop(0.65, '#fffbe8dd')
         moonGrad.addColorStop(1, '#fffbe800')
         ctx.beginPath()
-        ctx.arc(moonX, centerY, 5, 0, Math.PI * 2)
+        ctx.arc(moonX, centerY, 4, 0, Math.PI * 2)
         ctx.fillStyle = moonGrad
         ctx.fill()
       }

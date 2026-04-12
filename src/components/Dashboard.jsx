@@ -139,9 +139,10 @@ function Dashboard({ moonData, weather, heading }) {
           <div style={{
             fontFamily: 'Funnel Display, sans-serif',
             fontWeight: '700',
-            fontSize: '1.4rem',
+            fontSize: '0.85rem',
             color: 'var(--accent)',
             textAlign: 'center',
+            lineHeight: 1.1,
           }}>
             {phaseName}
           </div>
