@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 const CRESCENT_URL = 'https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005587/frames/730x730_1x1_30p/moon.0200.jpg'
 
-function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
+function LockOnRing({ isLocked, offsetX, offsetY, size = '95vw' }) {
   const [imgLoaded, setImgLoaded] = useState(false)
 
   const getNASAUrl = () => {
@@ -19,18 +19,21 @@ function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
     img.src = getNASAUrl()
   }, [])
 
-  // 15px inset from size on all sides
-  const heightStyle = `calc(${size} * 1.2)`
+  // Inner box dimensions
+  const boxWidth = `calc(${size} - 30px)`
+  const boxHeight = `calc((${size} - 30px) * 1.2)`
 
   return (
     <div style={{
       position: 'relative',
       width: size,
+      // Height accounts for box + 15px padding top and bottom
+      height: `calc((${size} - 30px) * 1.2 + 30px)`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      // Outer ring area — only visible when locked
     }}>
+
       <style>{`
         @keyframes ringFadeIn {
           0%   { opacity: 0; }
@@ -44,24 +47,28 @@ function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
         }
       `}</style>
 
-      {/* Lock-on ring — 15px wider than box on all sides */}
+      {/* Lock-on ring — exactly 15px outside box, 15px thick */}
       {isLocked && (
         <div style={{
           position: 'absolute',
-          inset: '-10px',
-          borderRadius: '47px',
-          border: '7.5px solid #fffbe8',
+          top: '0px',
+          left: '0px',
+          right: '0px',
+          bottom: '0px',
+          borderRadius: `calc(32px + 15px)`,
+          border: '15px solid #fffbe8',
           animation: 'ringFadeIn 0.8s ease forwards',
           pointerEvents: 'none',
           zIndex: 0,
+          boxSizing: 'border-box',
         }} />
       )}
 
       {/* Main moon box */}
       <div style={{
         position: 'relative',
-        width: size,
-        height: heightStyle,
+        width: boxWidth,
+        height: boxHeight,
         borderRadius: '32px',
         overflow: 'hidden',
         background: '#000000',
@@ -121,6 +128,7 @@ function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
           flexShrink: 0,
           zIndex: 2,
           opacity: imgLoaded ? 1 : 0,
+          transition: 'transform 0.15s ease-out, opacity 0.8s ease',
         }}>
           <img
             src={getNASAUrl()}
