@@ -1,7 +1,6 @@
 function Footer() {
   return (
     <div style={{
-      background: 'var(--primary)',
       padding: '32px 24px',
       display: 'flex',
       flexDirection: 'column',
@@ -18,18 +17,19 @@ function Footer() {
         LOOK UP
       </div>
       <small style={{
-        color: 'var(--black)',
+        color: 'var(--background)',
         fontSize: '0.7rem',
         textAlign: 'center',
         lineHeight: 1.6,
+        opacity: 0.7,
       }}>
-        Moon data powered by SunCalc · Weather by Open-Meteo · 
+        Moon data powered by SunCalc · Weather by Open-Meteo ·
         Moon imagery by NASA LRO · Built with React + Vite
       </small>
       <small style={{
-        color: 'var(--black)',
+        color: 'var(--background)',
         fontSize: '0.65rem',
-        opacity: 0.5,
+        opacity: 0.4,
       }}>
         © 2026 Look Up
       </small>

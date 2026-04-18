@@ -6,17 +6,18 @@ function StickyHeader({ visible }) {
   return (
     <div style={{
       position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
+      top: '8px',
+      left: '8px',
+      right: '8px',
       zIndex: 100,
       background: 'var(--black)',
-      padding: '10px 20px 8px',
+      borderRadius: '28px',
+      padding: '10px 20px 10px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       opacity: visible ? 1 : 0,
-      transform: visible ? 'translateY(0)' : 'translateY(-100%)',
+      transform: visible ? 'translateY(0)' : 'translateY(-120%)',
       transition: 'opacity 0.4s ease, transform 0.4s ease',
       pointerEvents: visible ? 'all' : 'none',
     }}>
@@ -24,7 +25,7 @@ function StickyHeader({ visible }) {
         <div style={{
           fontSize: '0.7rem',
           color: 'var(--secondary)',
-          letterSpacing: '0.08em',
+          letterSpacing: '0.04em',
           marginBottom: '1px',
         }}>
           {day}, {date}
@@ -36,8 +37,11 @@ function StickyHeader({ visible }) {
           color: 'var(--text)',
           letterSpacing: '0.01em',
           lineHeight: 1,
+          display: 'flex',
+          alignItems: 'baseline',
         }}>
-          {hours}:{minutes}:{seconds}
+          <span>{hours}:{minutes}</span>
+          <span style={{ color: 'var(--primary)' }}>:{seconds}</span>
         </div>
       </div>
 

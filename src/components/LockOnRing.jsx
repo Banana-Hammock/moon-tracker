@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 
 const CRESCENT_URL = 'https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005587/frames/730x730_1x1_30p/moon.0200.jpg'
 
-function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
+function LockOnRing({ isLocked, offsetX, offsetY, size = '95vw' }) {
   const [imgLoaded, setImgLoaded] = useState(false)
+  const [showRing, setShowRing] = useState(false)
 
   const getNASAUrl = () => {
     const now = new Date()
@@ -19,22 +20,37 @@ function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
     img.src = getNASAUrl()
   }, [])
 
-  // 15px inset from size on all sides
-  const heightStyle = `calc(${size} * 1.2)`
+  // Delayed unmount for exit animation
+  useEffect(() => {
+    if (isLocked) {
+      setShowRing(true)
+    } else {
+      const timeout = setTimeout(() => setShowRing(false), 600)
+      return () => clearTimeout(timeout)
+    }
+  }, [isLocked])
+
+  const boxWidth = `calc(${size} - 30px)`
+  const boxHeight = `calc((${size} - 30px) * 1.2)`
 
   return (
     <div style={{
       position: 'relative',
       width: size,
+      height: `calc((${size} - 30px) * 1.2 + 30px)`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      // Outer ring area — only visible when locked
     }}>
+
       <style>{`
         @keyframes ringFadeIn {
           0%   { opacity: 0; }
           100% { opacity: 1; }
+        }
+        @keyframes ringFadeOut {
+          0%   { opacity: 1; }
+          100% { opacity: 0; }
         }
         @keyframes moonPulse {
           0%   { transform: scale(1.0); }
@@ -44,24 +60,30 @@ function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
         }
       `}</style>
 
-      {/* Lock-on ring — 15px wider than box on all sides */}
-      {isLocked && (
+      {/* Lock-on ring — 5px thick, fades in and out */}
+      {showRing && (
         <div style={{
           position: 'absolute',
-          inset: '-10px',
+          top: '0px',
+          left: '0px',
+          right: '0px',
+          bottom: '0px',
           borderRadius: '47px',
-          border: '7.5px solid #fffbe8',
-          animation: 'ringFadeIn 0.8s ease forwards',
+          border: '5px solid #fffbe8',
+          animation: isLocked
+            ? 'ringFadeIn 0.8s ease forwards'
+            : 'ringFadeOut 0.6s ease forwards',
           pointerEvents: 'none',
           zIndex: 0,
+          boxSizing: 'border-box',
         }} />
       )}
 
       {/* Main moon box */}
       <div style={{
         position: 'relative',
-        width: size,
-        height: heightStyle,
+        width: boxWidth,
+        height: boxHeight,
         borderRadius: '32px',
         overflow: 'hidden',
         background: '#000000',
@@ -69,7 +91,6 @@ function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
         zIndex: 1,
       }}>
 
-        {/* Vignette */}
         <div style={{
           position: 'absolute',
           inset: 0,
@@ -79,7 +100,6 @@ function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
           pointerEvents: 'none',
         }} />
 
-        {/* Blurred crescent placeholder */}
         {!imgLoaded && (
           <div style={{
             position: 'absolute',
@@ -106,13 +126,11 @@ function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
           </div>
         )}
 
-        {/* Moon floats freely */}
         <div style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: `translate(calc(-50% + ${offsetX || 0}px), calc(-50% + ${offsetY || 0}px))`,
-          transition: 'transform 0.15s ease-out',
           width: '60%',
           aspectRatio: '1',
           borderRadius: '50%',
@@ -121,6 +139,7 @@ function LockOnRing({ isLocked, offsetX, offsetY, size = '80vw' }) {
           flexShrink: 0,
           zIndex: 2,
           opacity: imgLoaded ? 1 : 0,
+          transition: 'transform 0.15s ease-out, opacity 0.8s ease',
         }}>
           <img
             src={getNASAUrl()}

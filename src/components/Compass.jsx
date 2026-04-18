@@ -93,7 +93,7 @@ function Compass({ heading, moonAzimuth }) {
 
     if (azimuthDeg !== null) {
       ctx.fillStyle = '#fffbe8'
-      ctx.font = '500 22.4px Be Vietnam Pro, system-ui'
+      ctx.font = '700 22px Funnel Display, sans-serif'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(`${azimuthDeg}°`, cx, cy)

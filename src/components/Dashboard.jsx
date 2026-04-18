@@ -127,19 +127,19 @@ function Dashboard({ moonData, weather, heading }) {
           background: '#000000',
           border: 'none',
           borderRadius: '16px',
-          padding: '16px',
+          padding: '10px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '10px',
+          gap: '8px',
           minHeight: '160px',
         }}>
-          <MoonCanvas size="70px" />
+          <MoonCanvas size="80px" />
           <div style={{
             fontFamily: 'Funnel Display, sans-serif',
             fontWeight: '700',
-            fontSize: '0.85rem',
+            fontSize: '1.1rem',
             color: 'var(--accent)',
             textAlign: 'center',
             lineHeight: 1.1,

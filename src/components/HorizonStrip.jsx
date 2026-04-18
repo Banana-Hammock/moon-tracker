@@ -14,12 +14,11 @@ function HorizonStrip({ heading, moonAzimuth }) {
     ctx.scale(dpr, dpr)
 
     ctx.clearRect(0, 0, width, height)
-    ctx.fillStyle = '#000000'
+    ctx.fillStyle = '#ffffff08'
     ctx.fillRect(0, 0, width, height)
 
     const centerY = height / 2
 
-    // Ruler tick marks every 5 degrees
     for (let deg = 0; deg < 360; deg += 5) {
       let diff = deg - (heading || 0)
       if (diff > 180) diff -= 360
@@ -37,7 +36,6 @@ function HorizonStrip({ heading, moonAzimuth }) {
       ctx.stroke()
     }
 
-    // Cardinal direction labels
     const directions = [
       { label: 'N', deg: 0 },
       { label: 'NE', deg: 45 },
@@ -59,10 +57,9 @@ function HorizonStrip({ heading, moonAzimuth }) {
       ctx.fillStyle = '#d2bd5a'
       ctx.font = '500 11px Be Vietnam Pro, system-ui'
       ctx.textAlign = 'center'
-      ctx.fillText(label, x, centerY - 4)
+      ctx.fillText(label, x, centerY - 6)
     })
 
-    // Moon dot — smaller radius
     if (moonAzimuth !== undefined && moonAzimuth !== null) {
       const moonDeg = moonAzimuth * (180 / Math.PI) + 180
       let moonDiff = moonDeg - (heading || 0)
@@ -86,7 +83,7 @@ function HorizonStrip({ heading, moonAzimuth }) {
   return (
     <canvas
       ref={canvasRef}
-      style={{ display: 'block', width: '100%', height: '44px' }}
+      style={{ display: 'block', width: '100%', height: '52px', borderRadius: '100px' }}
     />
   )
 }
