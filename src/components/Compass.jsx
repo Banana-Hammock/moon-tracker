@@ -25,10 +25,10 @@ function Compass({ heading, moonAzimuth }) {
     ctx.lineWidth = 7
     ctx.stroke()
 
-    // Gold ring
+    // Outer ring
     ctx.beginPath()
     ctx.arc(cx, cy, r, 0, Math.PI * 2)
-    ctx.strokeStyle = '#fffbe8'
+    ctx.strokeStyle = '#daf5fd'
     ctx.lineWidth = 1.5
     ctx.stroke()
 
@@ -59,7 +59,7 @@ function Compass({ heading, moonAzimuth }) {
 
     cardinals.forEach(({ label, deg, color }) => {
       const angle = (deg - (heading || 0)) * Math.PI / 180
-      const labelR = r - 28
+      const labelR = r - 30
       const x = cx + Math.sin(angle) * labelR
       const y = cy - Math.cos(angle) * labelR
       ctx.fillStyle = color
