@@ -124,12 +124,12 @@ function App() {
             background: 'var(--black)',
             borderBottomLeftRadius: '32px',
             borderBottomRightRadius: '32px',
+            paddingTop: '8px',
             paddingBottom: '4px',
           }}
         >
-          {/* Pill horizon strip — 5px from edges */}
           <div style={{
-            margin: '8px 5px 0',
+            margin: '0 15px',
             borderRadius: '100px',
             overflow: 'hidden',
             background: '#ffffff08',
@@ -193,7 +193,7 @@ function App() {
           flexDirection: 'column',
           alignItems: 'center',
           padding: '12px 0 24px',
-          gap: '4px',
+          gap: '0px',
         }}>
           <LockOnRing
             isLocked={isLocked}
@@ -206,13 +206,13 @@ function App() {
             fontFamily: 'Funnel Display, sans-serif',
             fontWeight: '700',
             fontSize: '1.1rem',
-            letterSpacing: '0.06em',
+            letterSpacing: '0.09em',
             color: isLocked ? 'var(--accent)' : 'var(--text)',
             opacity: isLocked ? 1 : 0.7,
             transition: 'color 0.4s ease, opacity 0.4s ease',
             textAlign: 'center',
-            padding: '4px 20px 0',
-            marginBottom: '8px',
+            padding: '0 20px',
+            margin: '20px 0',
             textTransform: 'uppercase',
           }}>
             {instruction}
