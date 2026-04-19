@@ -24,7 +24,8 @@ function Footer() {
         opacity: 0.7,
       }}>
         Moon data powered by SunCalc · Weather by Open-Meteo ·
-        Moon imagery by NASA LRO · Built with React + Vite
+        Moon imagery by NASA LRO · Built with React + Vite"
+        By Ritwik Bhandari
       </small>
       <small style={{
         color: 'var(--background)',
