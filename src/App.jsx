@@ -212,6 +212,7 @@ function App() {
             transition: 'color 0.4s ease, opacity 0.4s ease',
             textAlign: 'center',
             padding: '0 20px',
+            marginTop: '10px',
             marginBottom: '15px',
             textTransform: 'uppercase',
           }}>
