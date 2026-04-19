@@ -28,7 +28,7 @@ function Compass({ heading, moonAzimuth }) {
     // Gold ring
     ctx.beginPath()
     ctx.arc(cx, cy, r, 0, Math.PI * 2)
-    ctx.strokeStyle = '#d2bd5a'
+    ctx.strokeStyle = '#fffbe8'
     ctx.lineWidth = 1.5
     ctx.stroke()
 
@@ -63,7 +63,7 @@ function Compass({ heading, moonAzimuth }) {
       const x = cx + Math.sin(angle) * labelR
       const y = cy - Math.cos(angle) * labelR
       ctx.fillStyle = color
-      ctx.font = '600 11px Be Vietnam Pro, system-ui'
+      ctx.font = '500 11px Be Vietnam Pro, system-ui'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(label, x, y)
