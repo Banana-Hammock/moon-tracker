@@ -129,7 +129,7 @@ function App() {
           }}
         >
           <div style={{
-            margin: '0 15px',
+            margin: '5px 15px',
             borderRadius: '100px',
             overflow: 'hidden',
             background: '#ffffff08',
@@ -212,7 +212,7 @@ function App() {
             transition: 'color 0.4s ease, opacity 0.4s ease',
             textAlign: 'center',
             padding: '0 20px',
-            margin: '20px 0',
+            marginBottom: '20px',
             textTransform: 'uppercase',
           }}>
             {instruction}
