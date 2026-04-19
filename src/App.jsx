@@ -1,4 +1,101 @@
-return (
+import { useState, useEffect, useRef } from 'react'
+import { useLocation } from './hooks/useLocation'
+import { useMoonData } from './hooks/useMoonData'
+import { useCompass } from './hooks/useCompass'
+import { useWeather } from './hooks/useWeather'
+import { useClock } from './hooks/useClock'
+import { getAltitudeInstruction } from './utils/altitudeInstruction'
+import { getNASAMoonFrameURL } from './utils/moonPhase'
+import HorizonStrip from './components/HorizonStrip'
+import StickyHeader from './components/StickyHeader'
+import LockOnRing from './components/LockOnRing'
+import KPIGrid from './components/KPIGrid'
+import Dashboard from './components/Dashboard'
+import Footer from './components/Footer'
+
+function App() {
+  const { location, city } = useLocation()
+  const moonData = useMoonData(location)
+  const { heading, beta, gamma } = useCompass()
+  const { weather } = useWeather(location)
+  const { hours, minutes, seconds, day, date } = useClock()
+  const [stickyVisible, setStickyVisible] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const horizonRef = useRef(null)
+  const topSectionRef = useRef(null)
+
+  useEffect(() => {
+    const img1 = new Image()
+    img1.src = getNASAMoonFrameURL()
+    const now = new Date()
+    const nextHour = new Date(now.getTime() + 3600000)
+    const start = new Date(Date.UTC(2026, 0, 1))
+    const hrs = Math.floor((nextHour - start) / (1000 * 60 * 60))
+    const frame = String(Math.min(hrs + 1, 8760)).padStart(4, '0')
+    const img2 = new Image()
+    img2.src = `https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005587/frames/730x730_1x1_30p/moon.${frame}.jpg`
+  }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setStickyVisible(!entry.isIntersecting),
+      { threshold: 0 }
+    )
+    if (horizonRef.current) observer.observe(horizonRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const topSection = topSectionRef.current
+      if (!topSection) return
+      const rect = topSection.getBoundingClientRect()
+      const sectionHeight = topSection.offsetHeight
+      const scrolledOut = -rect.top
+      const progress = Math.max(0, Math.min(1, scrolledOut / (sectionHeight * 0.5)))
+      setScrollProgress(progress)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const moonAzimuthDeg = moonData
+    ? ((moonData.azimuth * 180 / Math.PI) + 180 + 360) % 360
+    : null
+  const moonAltitudeDeg = moonData
+    ? moonData.altitude * 180 / Math.PI
+    : null
+
+  const phonePitch = beta !== null ? beta : 90
+  const phoneYaw = heading !== null ? heading : 0
+
+  let deltaAz = 0
+  let deltaAlt = 0
+
+  if (moonAzimuthDeg !== null && moonAltitudeDeg !== null) {
+    const rawAz = moonAzimuthDeg - phoneYaw
+    deltaAz = ((rawAz + 540) % 360) - 180
+    const phoneAltitude = phonePitch - 90
+    deltaAlt = moonAltitudeDeg - phoneAltitude
+  }
+
+  const delta = Math.abs(deltaAz)
+  const isLocked = delta <= 5 && Math.abs(deltaAlt) <= 10
+
+  const pxPerDegree = 4
+  const offsetX = deltaAz * pxPerDegree
+  const offsetY = -deltaAlt * pxPerDegree
+
+  const instruction = moonData
+    ? isLocked
+      ? getAltitudeInstruction(moonData.altitude)
+      : 'Turn to find the moon'
+    : 'Locating moon...'
+
+  const blurAmount = scrollProgress * 14
+  const topOpacity = 1 - scrollProgress
+
+  return (
     <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
 
       <style>{`
@@ -169,3 +266,6 @@ return (
 
     </div>
   )
+}
+
+export default App
