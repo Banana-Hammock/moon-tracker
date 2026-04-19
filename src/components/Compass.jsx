@@ -59,7 +59,7 @@ function Compass({ heading, moonAzimuth }) {
 
     cardinals.forEach(({ label, deg, color }) => {
       const angle = (deg - (heading || 0)) * Math.PI / 180
-      const labelR = r - 26
+      const labelR = r - 28
       const x = cx + Math.sin(angle) * labelR
       const y = cy - Math.cos(angle) * labelR
       ctx.fillStyle = color
