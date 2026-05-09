@@ -3,15 +3,22 @@ function ViewingWindow({ hourlyCloudcover, hourlyTimes, moonRise, moonSet }) {
 
   const now = new Date()
 
-  const slots = hourlyTimes.map((timeStr, i) => {
-    const time = new Date(timeStr)
-    const cover = hourlyCloudcover[i]
-    const isPast = time < now
-    const moonUp = moonRise && moonSet
-      ? time >= new Date(moonRise) && time <= new Date(moonSet)
-      : true
-    return { time, cover, isPast, moonUp }
-  }).filter(s => !s.isPast).slice(0, 12)
+  // Always take next 12 future hours
+  const slots = hourlyTimes
+    .map((timeStr, i) => {
+      const time = new Date(timeStr)
+      const cover = hourlyCloudcover[i]
+      const isPast = time < now
+      const moonUp = moonRise && moonSet
+        ? time >= new Date(moonRise) && time <= new Date(moonSet)
+        : true
+      const isMoonSet = moonSet
+        ? Math.abs(time - new Date(moonSet)) < 3600000 && time >= new Date(moonSet)
+        : false
+      return { time, cover, isPast, moonUp, isMoonSet }
+    })
+    .filter(s => !s.isPast)
+    .slice(0, 12)
 
   const best = slots
     .filter(s => s.moonUp)
@@ -26,7 +33,6 @@ function ViewingWindow({ hourlyCloudcover, hourlyTimes, moonRise, moonSet }) {
   return (
     <div style={{
       background: '#000000',
-      border: 'none',
       borderRadius: '16px',
       padding: '16px',
       display: 'flex',
@@ -51,6 +57,11 @@ function ViewingWindow({ hourlyCloudcover, hourlyTimes, moonRise, moonSet }) {
             {formatHour(best.time)} — {best.cover}% cloud
           </small>
         )}
+        {!best && (
+          <small style={{ color: 'var(--secondary)', fontSize: '0.7rem' }}>
+            Moon not visible
+          </small>
+        )}
       </div>
 
       <div style={{
@@ -58,13 +69,13 @@ function ViewingWindow({ hourlyCloudcover, hourlyTimes, moonRise, moonSet }) {
         gap: '4px',
         alignItems: 'flex-end',
         height: '60px',
+        position: 'relative',
       }}>
         {slots.map((slot, i) => {
           const height = Math.max(4, (1 - slot.cover / 100) * 60)
           const isNext = best && slot.time.getTime() === best.time.getTime()
           const quality = 1 - slot.cover / 100
 
-          // Color: best = primary blue, good = darker blue, poor = near bg
           const barColor = isNext
             ? '#3427ce'
             : slot.moonUp
@@ -74,25 +85,39 @@ function ViewingWindow({ hourlyCloudcover, hourlyTimes, moonRise, moonSet }) {
             : '#ffffff08'
 
           return (
-            <div
-              key={i}
-              style={{
-                flex: 1,
+            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', position: 'relative' }}>
+              {slot.isMoonSet && (
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  width: '1px',
+                  height: '100%',
+                  background: '#fffbe855',
+                  borderLeft: '1px dashed #fffbe855',
+                }} />
+              )}
+              <div style={{
+                width: '100%',
                 height: `${height}px`,
                 borderRadius: '3px',
                 background: barColor,
                 transition: 'height 0.3s ease',
                 boxShadow: isNext ? '0 0 8px #3427ce88' : 'none',
-              }}
-            />
+              }} />
+            </div>
           )
         })}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <small style={{ color: 'var(--secondary)', fontSize: '0.65rem' }}>
           {slots[0] ? formatHour(slots[0].time) : ''}
         </small>
+        {moonSet && new Date(moonSet) > now && new Date(moonSet) < slots[slots.length - 1]?.time && (
+          <small style={{ color: '#fffbe855', fontSize: '0.65rem' }}>
+            ↑ sets {formatHour(new Date(moonSet))}
+          </small>
+        )}
         <small style={{ color: 'var(--secondary)', fontSize: '0.65rem' }}>
           {slots[slots.length - 1] ? formatHour(slots[slots.length - 1].time) : ''}
         </small>

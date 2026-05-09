@@ -5,31 +5,29 @@ export function useCompass() {
   const [beta, setBeta] = useState(null)
   const [gamma, setGamma] = useState(null)
   const [error, setError] = useState(null)
+  const [needsPermission, setNeedsPermission] = useState(false)
   const receivedData = useRef(false)
   const smoothedHeading = useRef(null)
   const smoothedBeta = useRef(null)
 
-  useEffect(() => {
-    const ALPHA = 0.15 // lower = smoother but more lag, higher = more responsive
+  const ALPHA = 0.15
 
-    const handleAbsolute = (event) => {
-      if (event.alpha === null) return
+  const setupListeners = () => {
+    const handleiOS = (event) => {
+      if (event.webkitCompassHeading === null || event.webkitCompassHeading === undefined) return
       receivedData.current = true
 
-      const raw = (360 - event.alpha + 360) % 360
+      const raw = event.webkitCompassHeading
 
-      // Low-pass filter for heading — handle 0/360 wraparound
       if (smoothedHeading.current === null) {
         smoothedHeading.current = raw
       } else {
         let diff = raw - smoothedHeading.current
         if (diff > 180) diff -= 360
         if (diff < -180) diff += 360
-        smoothedHeading.current = smoothedHeading.current + ALPHA * diff
-        smoothedHeading.current = (smoothedHeading.current + 360) % 360
+        smoothedHeading.current = (smoothedHeading.current + ALPHA * diff + 360) % 360
       }
 
-      // Low-pass filter for beta
       if (smoothedBeta.current === null) {
         smoothedBeta.current = event.beta
       } else {
@@ -41,33 +39,88 @@ export function useCompass() {
       setGamma(event.gamma)
     }
 
-    const setup = () => {
-      window.addEventListener('deviceorientationabsolute', handleAbsolute, true)
-      setTimeout(() => {
-        if (!receivedData.current) {
-          setError("Compass not supported on this device")
-        }
-      }, 3000)
+    const handleAndroid = (event) => {
+      if (event.alpha === null) return
+      receivedData.current = true
+
+      const raw = (360 - event.alpha + 360) % 360
+
+      if (smoothedHeading.current === null) {
+        smoothedHeading.current = raw
+      } else {
+        let diff = raw - smoothedHeading.current
+        if (diff > 180) diff -= 360
+        if (diff < -180) diff += 360
+        smoothedHeading.current = (smoothedHeading.current + ALPHA * diff + 360) % 360
+      }
+
+      if (smoothedBeta.current === null) {
+        smoothedBeta.current = event.beta
+      } else {
+        smoothedBeta.current = smoothedBeta.current + ALPHA * (event.beta - smoothedBeta.current)
+      }
+
+      setHeading(Math.round(smoothedHeading.current * 10) / 10)
+      setBeta(Math.round(smoothedBeta.current * 10) / 10)
+      setGamma(event.gamma)
     }
 
-    if (typeof DeviceOrientationEvent !== 'undefined' &&
-      typeof DeviceOrientationEvent.requestPermission === 'function') {
-      DeviceOrientationEvent.requestPermission()
-        .then(response => {
-          if (response === 'granted') {
-            setup()
-          } else {
-            setError("Compass permission denied")
-          }
-        })
+    const isIOS = typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function'
+
+    if (isIOS) {
+      window.addEventListener('deviceorientation', handleiOS, true)
     } else {
-      setup()
+      window.addEventListener('deviceorientationabsolute', handleAndroid, true)
     }
+
+    setTimeout(() => {
+      if (!receivedData.current) {
+        setError('Compass not supported on this device')
+      }
+    }, 3000)
 
     return () => {
-      window.removeEventListener('deviceorientationabsolute', handleAbsolute, true)
+      window.removeEventListener('deviceorientation', handleiOS, true)
+      window.removeEventListener('deviceorientationabsolute', handleAndroid, true)
+    }
+  }
+
+  useEffect(() => {
+    const isIOS = typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function'
+
+    if (isIOS) {
+      // Check if permission already granted by firing a test
+      DeviceOrientationEvent.requestPermission()
+        .then(state => {
+          if (state === 'granted') {
+            setupListeners()
+          } else {
+            setNeedsPermission(true)
+          }
+        })
+        .catch(() => {
+          // requestPermission called outside gesture — need button
+          setNeedsPermission(true)
+        })
+    } else {
+      setupListeners()
     }
   }, [])
 
-  return { heading, beta, gamma, error }
+  const requestPermission = () => {
+    DeviceOrientationEvent.requestPermission()
+      .then(state => {
+        if (state === 'granted') {
+          setNeedsPermission(false)
+          setupListeners()
+        } else {
+          setError('Compass permission denied')
+        }
+      })
+      .catch(() => setError('Compass permission denied'))
+  }
+
+  return { heading, beta, gamma, error, needsPermission, requestPermission }
 }

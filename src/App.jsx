@@ -4,7 +4,7 @@ import { useMoonData } from './hooks/useMoonData'
 import { useCompass } from './hooks/useCompass'
 import { useWeather } from './hooks/useWeather'
 import { useClock } from './hooks/useClock'
-import { getAltitudeInstruction } from './utils/altitudeInstruction'
+import { getAltitudeInstruction, getDirectionalInstruction } from './utils/altitudeInstruction'
 import { getNASAMoonFrameURL } from './utils/moonPhase'
 import HorizonStrip from './components/HorizonStrip'
 import StickyHeader from './components/StickyHeader'
@@ -16,14 +16,28 @@ import Footer from './components/Footer'
 function App() {
   const { location, city } = useLocation()
   const moonData = useMoonData(location)
-  const { heading, beta, gamma } = useCompass()
+  const { heading, beta, gamma, needsPermission, requestPermission } = useCompass()
   const { weather } = useWeather(location)
   const { hours, minutes, seconds, day, date } = useClock()
+
   const [stickyVisible, setStickyVisible] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [appReady, setAppReady] = useState(false)
+  const [facingCorrect, setFacingCorrect] = useState(false)
+
   const horizonRef = useRef(null)
   const topSectionRef = useRef(null)
+  const facingStart = useRef(null)
+  const facingTimer = useRef(null)
 
+  // Mark app as ready once moon data and weather both arrive
+  useEffect(() => {
+    if (moonData && weather && !appReady) {
+      setAppReady(true)
+    }
+  }, [moonData, weather])
+
+  // Preload NASA images
   useEffect(() => {
     const img1 = new Image()
     img1.src = getNASAMoonFrameURL()
@@ -36,6 +50,7 @@ function App() {
     img2.src = `https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005587/frames/730x730_1x1_30p/moon.${frame}.jpg`
   }, [])
 
+  // Sticky header observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setStickyVisible(!entry.isIntersecting),
@@ -45,6 +60,7 @@ function App() {
     return () => observer.disconnect()
   }, [])
 
+  // Scroll blur
   useEffect(() => {
     const handleScroll = () => {
       const topSection = topSectionRef.current
@@ -59,6 +75,7 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Moon position calculations
   const moonAzimuthDeg = moonData
     ? ((moonData.azimuth * 180 / Math.PI) + 180 + 360) % 360
     : null
@@ -81,16 +98,52 @@ function App() {
 
   const delta = Math.abs(deltaAz)
   const isLocked = delta <= 5 && Math.abs(deltaAlt) <= 10
+  const isFacingDirection = delta <= 10
+
+  // 7.5 second facing detection
+  useEffect(() => {
+    if (!appReady) return
+
+    if (isFacingDirection) {
+      if (!facingStart.current) {
+        facingStart.current = Date.now()
+      }
+      facingTimer.current = setInterval(() => {
+        if (facingStart.current && Date.now() - facingStart.current >= 7500) {
+          setFacingCorrect(true)
+          clearInterval(facingTimer.current)
+        }
+      }, 500)
+    } else {
+      facingStart.current = null
+      if (!facingCorrect) {
+        clearInterval(facingTimer.current)
+      }
+    }
+    return () => clearInterval(facingTimer.current)
+  }, [isFacingDirection, appReady, facingCorrect])
+
+  // Reset facingCorrect if moon moves significantly
+  useEffect(() => {
+    if (delta > 30) {
+      setFacingCorrect(false)
+      facingStart.current = null
+    }
+  }, [delta])
+
+  // Instruction logic — 3 stages
+  let instruction
+  if (!appReady) {
+    instruction = 'Welcome'
+  } else if (facingCorrect || isLocked) {
+    instruction = getAltitudeInstruction(moonData.altitude)
+  } else {
+    instruction = getDirectionalInstruction(moonAzimuthDeg)
+  }
 
   const pxPerDegree = 4
   const offsetX = deltaAz * pxPerDegree
   const offsetY = -deltaAlt * pxPerDegree
-
-  const instruction = moonData
-    ? isLocked
-      ? getAltitudeInstruction(moonData.altitude)
-      : 'Turn to find the moon'
-    : 'Locating moon...'
 
   const blurAmount = scrollProgress * 14
   const topOpacity = 1 - scrollProgress
@@ -105,6 +158,61 @@ function App() {
         }
       `}</style>
 
+      {/* iOS permission screen */}
+      {needsPermission && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'var(--background)',
+          zIndex: 999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '40px 32px',
+          gap: '24px',
+          textAlign: 'center',
+        }}>
+          <div style={{ fontSize: '3rem' }}>🧭</div>
+          <h4 style={{
+            fontFamily: 'Funnel Display, sans-serif',
+            fontWeight: '700',
+            color: 'var(--text)',
+            letterSpacing: '0.05em',
+          }}>
+            Compass Access
+          </h4>
+          <p style={{
+            color: 'var(--secondary)',
+            fontSize: '0.9rem',
+            lineHeight: 1.6,
+            maxWidth: '280px',
+          }}>
+            Look Up needs your device orientation to point you toward the moon
+          </p>
+          <button
+            onClick={requestPermission}
+            style={{
+              background: 'var(--primary)',
+              color: 'var(--text)',
+              border: 'none',
+              borderRadius: '100px',
+              padding: '14px 36px',
+              fontFamily: 'Funnel Display, sans-serif',
+              fontWeight: '700',
+              fontSize: '1rem',
+              letterSpacing: '0.08em',
+              cursor: 'pointer',
+            }}
+          >
+            Enable Compass
+          </button>
+          <small style={{ color: 'var(--secondary)', opacity: 0.5, fontSize: '0.7rem' }}>
+            You'll see a system permission prompt
+          </small>
+        </div>
+      )}
+
       <StickyHeader visible={stickyVisible} />
 
       {/* Top section */}
@@ -117,19 +225,17 @@ function App() {
           willChange: 'filter, opacity',
         }}
       >
-        {/* Header with rounded bottom corners */}
         <div
           ref={horizonRef}
           style={{
             background: 'var(--black)',
             borderBottomLeftRadius: '32px',
             borderBottomRightRadius: '32px',
-            paddingTop: '8px',
             paddingBottom: '4px',
           }}
         >
           <div style={{
-            margin: '5px 15px',
+            margin: '8px 5px 0',
             borderRadius: '100px',
             overflow: 'hidden',
             background: '#ffffff08',
@@ -206,14 +312,13 @@ function App() {
             fontFamily: 'Funnel Display, sans-serif',
             fontWeight: '700',
             fontSize: '1.1rem',
-            letterSpacing: '0.09em',
-            color: isLocked ? 'var(--accent)' : 'var(--text)',
-            opacity: isLocked ? 1 : 0.7,
-            transition: 'color 0.4s ease, opacity 0.4s ease',
+            letterSpacing: '0.06em',
+            color: 'var(--text)',
+            opacity: appReady ? 1 : 0.5,
+            transition: 'opacity 0.4s ease',
             textAlign: 'center',
             padding: '0 20px',
-            marginTop: '10px',
-            marginBottom: '15px',
+            margin: '20px 0',
             textTransform: 'uppercase',
           }}>
             {instruction}
@@ -254,7 +359,6 @@ function App() {
           heading={heading}
         />
 
-        {/* Footer with concentric rounded top corners */}
         <div style={{
           background: 'var(--primary)',
           borderTopLeftRadius: '32px',

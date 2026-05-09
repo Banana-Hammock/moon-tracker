@@ -59,7 +59,9 @@ function KPIGrid({ moonData, weather, city }) {
     }
   }
 
-  const cloudcover = weather?.cloudcover !== undefined ? `${weather.cloudcover}%` : '--'
+  const altitudeDeg = moonData
+    ? `${Math.round(moonData.altitude * 180 / Math.PI)}°`
+    : '--'
 
   const visibility = weather?.cloudcover !== undefined
     ? weather.cloudcover <= 20 ? 'Excellent'
@@ -99,7 +101,7 @@ function KPIGrid({ moonData, weather, city }) {
         style={primaryCard}
         valueFontSize="1.6rem"
       />
-      <KPICard label="Cloud Cover" value={cloudcover} style={lightBlueCard} />
+      <KPICard label="Altitude" value={altitudeDeg} style={lightBlueCard} />
     </div>
   )
 }

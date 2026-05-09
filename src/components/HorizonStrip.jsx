@@ -54,8 +54,11 @@ function HorizonStrip({ heading, moonAzimuth }) {
       const x = width / 2 + (diff / 90) * (width / 2)
       if (x < 0 || x > width) return
 
+      const isCardinal = ['N', 'E', 'S', 'W'].includes(label)
       ctx.fillStyle = '#d2bd5a'
-      ctx.font = '500 11px Be Vietnam Pro, system-ui'
+      ctx.font = isCardinal
+        ? '500 11px Be Vietnam Pro, system-ui'
+        : '500 8px Be Vietnam Pro, system-ui'
       ctx.textAlign = 'center'
       ctx.fillText(label, x, centerY - 6)
     })
