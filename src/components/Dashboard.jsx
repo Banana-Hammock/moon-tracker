@@ -115,7 +115,7 @@ function Dashboard({ moonData, weather, heading }) {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <DashCard label="Visibility" value={visibility} style={{ flex: 1, ...primaryCard, maxHeight: '80px' }} />
+          <DashCard label="Visibility" value={visibility} style={{ flex: 1, ...primaryCard, maxHeight: '100px' }} />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', flex: 1 }}>
             <DashCard label="Cloud" value={weather?.cloudcover !== undefined ? `${weather.cloudcover}%` : '--'} style={lightBlueCard} />
             <DashCard label="Temp" value={weather?.temperature !== undefined ? `${Math.round(weather.temperature)}°C` : '--'} style={lightBlueCard} />
