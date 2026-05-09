@@ -94,7 +94,7 @@ function Compass({ heading, moonAzimuth }) {
     if (azimuthDeg !== null) {
       // "AZIMUTH" label above the number
       ctx.fillStyle = '#fffbe8'
-      ctx.font = '500 9px Be Vietnam Pro, system-ui'
+      ctx.font = '500 11.2px Be Vietnam Pro, system-ui'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText('AZIMUTH', cx, cy - 14)
