@@ -101,8 +101,9 @@ function App() {
   const isFacingDirection = delta <= 10
 
   // 7.5 second facing detection
+  // 7.5 second facing detection — once achieved, stays until moon moves far
   useEffect(() => {
-    if (!appReady) return
+    if (!appReady || facingCorrect) return
 
     if (isFacingDirection) {
       if (!facingStart.current) {
@@ -116,12 +117,29 @@ function App() {
       }, 500)
     } else {
       facingStart.current = null
-      if (!facingCorrect) {
-        clearInterval(facingTimer.current)
-      }
+      clearInterval(facingTimer.current)
     }
+
     return () => clearInterval(facingTimer.current)
   }, [isFacingDirection, appReady, facingCorrect])
+
+  // Only reset facingCorrect if moon moves very far away (user walked somewhere)
+  useEffect(() => {
+    if (delta > 60) {
+      setFacingCorrect(false)
+      facingStart.current = null
+    }
+  }, [delta])
+
+  // Instruction — 3 stable stages, never changes once advanced
+  // Stage 1: not ready → Welcome
+  // Stage 2: ready, not facing → directional instruction
+  // Stage 3: faced correct direction for 7.5s OR locked → altitude instruction, stays
+  const instruction = !appReady
+    ? 'Welcome'
+    : (facingCorrect || isLocked)
+      ? getAltitudeInstruction(moonData.altitude)
+      : getDirectionalInstruction(moonAzimuthDeg)
 
   // Reset facingCorrect if moon moves significantly
   useEffect(() => {
@@ -231,15 +249,17 @@ function App() {
             background: 'var(--black)',
             borderBottomLeftRadius: '32px',
             borderBottomRightRadius: '32px',
+            paddingTop: '0px',
             paddingBottom: '4px',
           }}
         >
           <div style={{
-            margin: '8px 5px 0',
+            margin: '0 5px',
             borderRadius: '100px',
             overflow: 'hidden',
             background: '#ffffff08',
           }}>
+
             <HorizonStrip heading={heading} moonAzimuth={moonData?.azimuth} />
           </div>
 

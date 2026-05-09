@@ -2,6 +2,7 @@ import Compass from './Compass'
 import ViewingWindow from './ViewingWindow'
 import { getMoonPhaseName, getMoonAge, formatTime } from '../utils/moonPhase'
 import MoonCanvas from './MoonCanvas'
+import { getMLVisibilityScore, getVisibilityLabel } from '../utils/visibilityModel'
 
 function DashCard({ label, value, children, style }) {
   const textColor = style?.color || 'var(--text)'
@@ -54,13 +55,20 @@ function Dashboard({ moonData, weather, heading }) {
   const illumination = Math.round(moonData.fraction * 100)
   const distance = Math.round(moonData.distance)
 
-  const visibility = weather?.cloudcover !== undefined
-    ? weather.cloudcover <= 20 ? 'Excellent'
-    : weather.cloudcover <= 40 ? 'Good'
-    : weather.cloudcover <= 60 ? 'Fair'
-    : weather.cloudcover <= 80 ? 'Poor'
-    : 'Very Poor'
-    : '--'
+  // at the top of the Dashboard function:
+  let visibility = '--'
+  if (moonData && weather) {
+    const score = getMLVisibilityScore({
+      cloud_cover: weather.cloudcover ?? 50,
+      humidity: weather.humidity ?? 50,
+      wind_speed: weather.windspeed ?? 0,
+      weather_code: weather.weathercode ?? 0,
+      sun_alt: moonData.sunAltitude ?? 0,
+      moon_alt: moonData.altitude * 180 / Math.PI,
+      moon_illum: moonData.fraction,
+    })
+    visibility = getVisibilityLabel(score)
+  }
 
   const primaryCard = {
     background: 'var(--primary)',

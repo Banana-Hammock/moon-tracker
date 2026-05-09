@@ -12,8 +12,8 @@ export function useMoonData(location) {
       const pos = SunCalc.getMoonPosition(now, location.lat, location.lon)
       const illum = SunCalc.getMoonIllumination(now)
       const times = SunCalc.getMoonTimes(now, location.lat, location.lon)
+      const sunPos = SunCalc.getPosition(now, location.lat, location.lon)
 
-      // If rise is null, moon rose yesterday — fetch yesterday's rise time
       let riseTime = times.rise
       if (!riseTime) {
         const yesterday = new Date(now)
@@ -22,7 +22,6 @@ export function useMoonData(location) {
         riseTime = yesterdayTimes.rise || null
       }
 
-      // If set is null, moon sets tomorrow — fetch tomorrow's set time
       let setTime = times.set
       if (!setTime) {
         const tomorrow = new Date(now)
@@ -40,6 +39,7 @@ export function useMoonData(location) {
         angle: illum.angle,
         rise: riseTime,
         set: setTime,
+        sunAltitude: sunPos.altitude * 180 / Math.PI,
       })
     }
 

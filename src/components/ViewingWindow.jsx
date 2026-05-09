@@ -115,7 +115,7 @@ function ViewingWindow({ hourlyCloudcover, hourlyTimes, moonRise, moonSet }) {
         </small>
         {moonSet && new Date(moonSet) > now && new Date(moonSet) < slots[slots.length - 1]?.time && (
           <small style={{ color: '#fffbe855', fontSize: '0.65rem' }}>
-            ↑ sets {formatHour(new Date(moonSet))}
+            Moon sets
           </small>
         )}
         <small style={{ color: 'var(--secondary)', fontSize: '0.65rem' }}>

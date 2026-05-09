@@ -92,11 +92,19 @@ function Compass({ heading, moonAzimuth }) {
       : null
 
     if (azimuthDeg !== null) {
+      // "AZIMUTH" label above the number
       ctx.fillStyle = '#fffbe8'
-      ctx.font = '700 22px Funnel Display, sans-serif'
+      ctx.font = '500 9px Be Vietnam Pro, system-ui'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.fillText(`${azimuthDeg}°`, cx, cy)
+      ctx.fillText('AZIMUTH', cx, cy - 14)
+
+      // Degree reading below
+      ctx.fillStyle = '#fffbe8'
+      ctx.font = '700 22px Funnel Display, system-ui'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(`${azimuthDeg}°`, cx, cy + 6)
     }
 
   }, [heading, moonAzimuth])

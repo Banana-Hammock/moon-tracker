@@ -1,4 +1,5 @@
 import { formatMoonSetCountdown } from '../utils/moonPhase'
+import { getMLVisibilityScore, getVisibilityLabel } from '../utils/visibilityModel'
 
 function KPICard({ label, value, style, valueFontSize }) {
   const textColor = style?.color || 'var(--text)'
@@ -63,13 +64,20 @@ function KPIGrid({ moonData, weather, city }) {
     ? `${Math.round(moonData.altitude * 180 / Math.PI)}°`
     : '--'
 
-  const visibility = weather?.cloudcover !== undefined
-    ? weather.cloudcover <= 20 ? 'Excellent'
-    : weather.cloudcover <= 40 ? 'Good'
-    : weather.cloudcover <= 60 ? 'Fair'
-    : weather.cloudcover <= 80 ? 'Poor'
-    : 'Very Poor'
-    : '--'
+  // ML visibility score
+  let visibilityLabel = '--'
+  if (moonData && weather) {
+    const score = getMLVisibilityScore({
+      cloud_cover: weather.cloudcover ?? 50,
+      humidity: weather.humidity ?? 50,
+      wind_speed: weather.windspeed ?? 0,
+      weather_code: weather.weathercode ?? 0,
+      sun_alt: moonData.sunAltitude ?? 0,
+      moon_alt: moonData.altitude * 180 / Math.PI,
+      moon_illum: moonData.fraction,
+    })
+    visibilityLabel = getVisibilityLabel(score)
+  }
 
   const primaryCard = {
     background: 'var(--primary)',
@@ -97,7 +105,7 @@ function KPIGrid({ moonData, weather, city }) {
       <KPICard label="Location" value={city || '...'} />
       <KPICard
         label="Visibility"
-        value={visibility}
+        value={visibilityLabel}
         style={primaryCard}
         valueFontSize="1.6rem"
       />
