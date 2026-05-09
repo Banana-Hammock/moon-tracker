@@ -220,12 +220,12 @@ function App() {
             background: 'var(--black)',
             borderBottomLeftRadius: '32px',
             borderBottomRightRadius: '32px',
-            paddingTop: '10px',
+            paddingTop: '5px',
             paddingBottom: '4px',
           }}
         >
           <div style={{
-            margin: '10px 15px 0',
+            margin: '5px 15px 0',
             borderRadius: '100px',
             overflow: 'hidden',
             background: '#ffffff08',
