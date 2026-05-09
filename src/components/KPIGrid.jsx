@@ -50,15 +50,14 @@ function KPIGrid({ moonData, weather, city }) {
 
     if (moonIsUp && setTime && setTime > now) {
       moonTimerLabel = 'Moon Sets In'
-      moonTimerValue = formatMoonSetCountdown(setTime)
+      moonTimerValue = formatMoonSetCountdown(new Date(setTime))
     } else if (!moonIsUp && riseTime && riseTime > now) {
       moonTimerLabel = 'Moon Rises In'
-      moonTimerValue = formatMoonSetCountdown(riseTime)
+      moonTimerValue = formatMoonSetCountdown(new Date(riseTime))
     } else {
       moonTimerLabel = moonIsUp ? 'Moon Sets In' : 'Moon Rises In'
       moonTimerValue = '--'
-    }
-  }
+    }  }
 
   const altitudeDeg = moonData
     ? `${Math.round(moonData.altitude * 180 / Math.PI)}°`

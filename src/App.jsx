@@ -224,7 +224,7 @@ function App() {
           }}
         >
           <div style={{
-            margin: '0 5px',
+            margin: '5px 5px 0',
             borderRadius: '100px',
             overflow: 'hidden',
             background: '#ffffff08',
