@@ -30,14 +30,12 @@ function App() {
   const facingStart = useRef(null)
   const facingTimer = useRef(null)
 
-  // Mark app as ready once moon data and weather both arrive
   useEffect(() => {
     if (moonData && weather && !appReady) {
       setAppReady(true)
     }
   }, [moonData, weather])
 
-  // Preload NASA images
   useEffect(() => {
     const img1 = new Image()
     img1.src = getNASAMoonFrameURL()
@@ -50,7 +48,6 @@ function App() {
     img2.src = `https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005587/frames/730x730_1x1_30p/moon.${frame}.jpg`
   }, [])
 
-  // Sticky header observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setStickyVisible(!entry.isIntersecting),
@@ -60,7 +57,6 @@ function App() {
     return () => observer.disconnect()
   }, [])
 
-  // Scroll blur
   useEffect(() => {
     const handleScroll = () => {
       const topSection = topSectionRef.current
@@ -75,7 +71,6 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Moon position calculations
   const moonAzimuthDeg = moonData
     ? ((moonData.azimuth * 180 / Math.PI) + 180 + 360) % 360
     : null
@@ -100,8 +95,6 @@ function App() {
   const isLocked = delta <= 5 && Math.abs(deltaAlt) <= 10
   const isFacingDirection = delta <= 10
 
-  // 7.5 second facing detection
-  // 7.5 second facing detection — once achieved, stays until moon moves far
   useEffect(() => {
     if (!appReady || facingCorrect) return
 
@@ -123,7 +116,6 @@ function App() {
     return () => clearInterval(facingTimer.current)
   }, [isFacingDirection, appReady, facingCorrect])
 
-  // Only reset facingCorrect if moon moves very far away (user walked somewhere)
   useEffect(() => {
     if (delta > 60) {
       setFacingCorrect(false)
@@ -131,25 +123,13 @@ function App() {
     }
   }, [delta])
 
-  // Instruction — 3 stable stages, never changes once advanced
-  // Stage 1: not ready → Welcome
-  // Stage 2: ready, not facing → directional instruction
-  // Stage 3: faced correct direction for 7.5s OR locked → altitude instruction, stays
-  const instruction = !appReady
-    ? 'Welcome'
-    : (facingCorrect || isLocked)
-      ? getAltitudeInstruction(moonData.altitude)
-      : getDirectionalInstruction(moonAzimuthDeg)
+  const pxPerDegree = 4
+  const offsetX = deltaAz * pxPerDegree
+  const offsetY = -deltaAlt * pxPerDegree
 
-  // Reset facingCorrect if moon moves significantly
-  useEffect(() => {
-    if (delta > 30) {
-      setFacingCorrect(false)
-      facingStart.current = null
-    }
-  }, [delta])
+  const blurAmount = scrollProgress * 14
+  const topOpacity = 1 - scrollProgress
 
-  // Instruction logic — 3 stages
   let instruction
   if (!appReady) {
     instruction = 'Welcome'
@@ -158,13 +138,6 @@ function App() {
   } else {
     instruction = getDirectionalInstruction(moonAzimuthDeg)
   }
-
-  const pxPerDegree = 4
-  const offsetX = deltaAz * pxPerDegree
-  const offsetY = -deltaAlt * pxPerDegree
-
-  const blurAmount = scrollProgress * 14
-  const topOpacity = 1 - scrollProgress
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
@@ -176,7 +149,6 @@ function App() {
         }
       `}</style>
 
-      {/* iOS permission screen */}
       {needsPermission && (
         <div style={{
           position: 'fixed',
@@ -233,7 +205,6 @@ function App() {
 
       <StickyHeader visible={stickyVisible} />
 
-      {/* Top section */}
       <div
         ref={topSectionRef}
         style={{
@@ -249,7 +220,6 @@ function App() {
             background: 'var(--black)',
             borderBottomLeftRadius: '32px',
             borderBottomRightRadius: '32px',
-            paddingTop: '0px',
             paddingBottom: '4px',
           }}
         >
@@ -259,7 +229,6 @@ function App() {
             overflow: 'hidden',
             background: '#ffffff08',
           }}>
-
             <HorizonStrip heading={heading} moonAzimuth={moonData?.azimuth} />
           </div>
 
@@ -348,7 +317,6 @@ function App() {
         </div>
       </div>
 
-      {/* Analytics section */}
       <div style={{ paddingTop: '48px' }}>
         <div style={{
           textAlign: 'center',
