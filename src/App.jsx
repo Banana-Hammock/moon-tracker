@@ -220,7 +220,7 @@ function App() {
             background: 'var(--black)',
             borderBottomLeftRadius: '32px',
             borderBottomRightRadius: '32px',
-            paddingTop: '0px',
+            paddingTop: '10px',
             paddingBottom: '4px',
           }}
         >
